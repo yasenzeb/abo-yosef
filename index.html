@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="أبو يوسف للألبان">
 <meta name="mobile-web-app-capable" content="yes">
-<title>أبو يوسف للألبان - إدارة الإنتاج والحسابات</title>
+<title>أبو يوسف للألبان - إدارة وتوريد وحسابات الألبان</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,17 +27,15 @@
   --amber-soft: #fffbeb;
   --red: #dc2626;
   --red-soft: #fef2f2;
-  --bg: #f1f5f9;
+  --bg: #f8fafc;
   --surface: #ffffff;
   --border: #e2e8f0;
-  --border-focus: #3b82f6;
   --ink: #0f172a;
   --ink-secondary: #475569;
   --muted: #64748b;
   --r-sm: 8px;
   --r-md: 14px;
   --r-lg: 20px;
-  --r-full: 9999px;
   --shadow-sm: 0 1px 3px rgba(11,30,56,.06);
   --shadow-md: 0 4px 14px rgba(11,30,56,.08);
   --shadow-lg: 0 10px 25px rgba(11,30,56,.12);
@@ -77,7 +75,7 @@ html, body {
 .app-header {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
   color: #fff;
-  padding: 14px 16px;
+  padding: 12px 16px;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -88,7 +86,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
 }
 .header-brand {
   display: flex;
@@ -96,28 +94,24 @@ html, body {
   gap: 10px;
 }
 .brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: rgba(255,255,255,.12);
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,.2);
 }
 .brand-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: -.2px;
+  line-height: 1.2;
 }
 .brand-subtitle {
   font-size: 11px;
-  color: rgba(255,255,255,.75);
+  color: #cbd5e1;
   font-weight: 500;
-  margin-top: 1px;
 }
 .header-actions {
   display: flex;
@@ -128,27 +122,25 @@ html, body {
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.16);
   color: #fff;
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px;
-  transition: all .15s;
+  gap: 4px;
 }
 .header-btn:active {
   background: rgba(255,255,255,.25);
-  transform: scale(.97);
 }
 
-/* ─── CYCLE BANNER (الأسبوع من الأربع للاربع) ─── */
-.cycle-strip {
-  background: rgba(255,255,255,.07);
-  border-radius: 8px;
-  padding: 6px 10px;
+/* ─── WEEK CYCLE BAR (خميس لـ أربعاء) ─── */
+.week-cycle-bar {
+  background: rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 8px 10px;
   margin-top: 10px;
   display: flex;
   align-items: center;
@@ -156,20 +148,33 @@ html, body {
   font-size: 11px;
   color: #e2e8f0;
 }
-.cycle-badge {
-  background: rgba(5, 150, 105, 0.35);
-  border: 1px solid rgba(5, 150, 105, 0.6);
-  color: #6ee7b7;
+.week-nav-btn {
+  background: rgba(255,255,255,.15);
+  border: none;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.week-nav-btn:active {
+  background: rgba(255,255,255,.3);
+}
+.payout-tag {
+  background: #059669;
+  color: #fff;
   padding: 2px 7px;
   border-radius: 6px;
-  font-weight: 700;
   font-size: 10px;
+  font-weight: 800;
 }
 
-/* ─── MAIN CONTENT CONTAINER ─── */
+/* ─── MAIN VIEW ─── */
 .main-view {
   flex: 1;
-  padding: 14px 14px calc(78px + var(--safe-bottom)) 14px;
+  padding: 12px 14px calc(76px + var(--safe-bottom)) 14px;
   overflow-y: auto;
 }
 
@@ -204,26 +209,21 @@ html, body {
   font-weight: 600;
   cursor: pointer;
   gap: 3px;
-  transition: all .2s;
   position: relative;
 }
 .nav-tab .tab-icon {
   font-size: 20px;
   line-height: 1;
-  transition: transform .2s;
 }
 .nav-tab.active {
   color: var(--blue);
   font-weight: 800;
 }
-.nav-tab.active .tab-icon {
-  transform: translateY(-2px) scale(1.1);
-}
 .nav-tab.active::after {
   content: '';
   position: absolute;
   top: 0;
-  width: 24px;
+  width: 26px;
   height: 3px;
   background: var(--blue);
   border-radius: 0 0 3px 3px;
@@ -252,7 +252,7 @@ html, body {
   color: var(--navy);
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
 }
 
 /* ─── STATS GRID ─── */
@@ -283,7 +283,7 @@ html, body {
 .stat-card.green::before { background: var(--green); }
 .stat-card.amber::before { background: var(--amber); }
 .stat-value {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 900;
   color: var(--navy);
   line-height: 1.2;
@@ -296,35 +296,10 @@ html, body {
   margin-top: 3px;
 }
 
-/* ─── WEDNESDAY PAYOUT ALERT BOX ─── */
-.payout-alert {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 2px solid #86efac;
-  border-radius: var(--r-md);
-  padding: 14px;
-  margin-bottom: 14px;
-  box-shadow: var(--shadow-sm);
-}
-.payout-alert-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #166534;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-.payout-alert-desc {
-  font-size: 12px;
-  color: #15803d;
-  line-height: 1.5;
-  margin-bottom: 10px;
-}
-
 /* ─── BUTTONS ─── */
 .btn {
   padding: 11px 16px;
-  border-radius: var(--r-sm);
+  border-radius: 10px;
   border: none;
   font-family: inherit;
   font-size: 13px;
@@ -333,39 +308,30 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   width: 100%;
-  transition: all .15s;
+  transition: all .12s;
 }
 .btn:active {
   transform: scale(.98);
 }
 .btn-primary { background: var(--blue); color: #fff; }
-.btn-primary:active { background: var(--blue-hover); }
 .btn-success { background: var(--green); color: #fff; }
-.btn-success:active { background: var(--green-hover); }
 .btn-amber { background: var(--amber); color: #fff; }
 .btn-danger { background: var(--red); color: #fff; }
-.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--navy); }
+.btn-outline { background: #fff; border: 1.5px solid var(--border); color: var(--navy); }
 .btn-outline:active { background: #f8fafc; border-color: var(--blue); }
-.btn-ghost { background: transparent; color: var(--blue); }
 .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; border-radius: 8px; }
 
-/* ─── SEARCH & FILTER BAR ─── */
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.search-input-wrap {
+/* ─── SEARCH BAR ─── */
+.search-bar-wrap {
   position: relative;
-  flex: 1;
+  margin-bottom: 10px;
 }
-.search-input {
+.search-bar-input {
   width: 100%;
   padding: 9px 34px 9px 12px;
-  background: var(--surface);
+  background: #fff;
   border: 1.5px solid var(--border);
   border-radius: 10px;
   font-family: inherit;
@@ -373,12 +339,12 @@ html, body {
   color: var(--ink);
   transition: border-color .15s;
 }
-.search-input:focus {
+.search-bar-input:focus {
   outline: none;
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(37,99,235,.1);
 }
-.search-icon {
+.search-bar-icon {
   position: absolute;
   right: 11px;
   top: 50%;
@@ -388,142 +354,145 @@ html, body {
   pointer-events: none;
 }
 
-/* ─── DATE SELECTOR CHIPS (دورة الأسبوع) ─── */
-.date-selector {
+/* ─── 7 DAYS OF THE WEEK SELECTOR (خميس لـ أربعاء) ─── */
+.days-bar {
   display: flex;
   overflow-x: auto;
   gap: 6px;
   padding: 4px 2px 10px 2px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   scrollbar-width: none;
 }
-.date-selector::-webkit-scrollbar { display: none; }
-.date-chip {
-  flex-shrink: 0;
-  padding: 8px 12px;
+.days-bar::-webkit-scrollbar { display: none; }
+.day-chip {
+  flex: 1;
+  min-width: 62px;
+  padding: 8px 6px;
   border-radius: 12px;
-  background: var(--surface);
+  background: #fff;
   border: 1.5px solid var(--border);
   font-family: inherit;
-  font-size: 11px;
-  font-weight: 700;
   cursor: pointer;
   text-align: center;
-  min-width: 58px;
   color: var(--ink-secondary);
-  transition: all .15s;
   position: relative;
+  transition: all .15s;
 }
-.date-chip .chip-day { font-size: 11px; opacity: .8; }
-.date-chip .chip-num { font-size: 14px; font-weight: 800; margin-top: 1px; }
-.date-chip.active {
+.day-chip .chip-name {
+  font-size: 11px;
+  font-weight: 700;
+}
+.day-chip .chip-date {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 1px;
+}
+.day-chip.active {
   background: var(--navy);
   color: #fff;
   border-color: var(--navy);
-  box-shadow: 0 4px 10px rgba(11,30,56,.2);
+  box-shadow: 0 3px 8px rgba(11,30,56,.2);
 }
-.date-chip.is-wednesday::after {
-  content: 'قبض';
+.day-chip.is-payout::before {
+  content: 'القبض 💰';
   position: absolute;
-  top: -4px;
-  left: -2px;
-  background: var(--green);
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #059669;
   color: #fff;
   font-size: 8px;
-  padding: 1px 4px;
+  font-weight: 900;
+  padding: 1px 5px;
   border-radius: 4px;
-  font-weight: 800;
+  white-space: nowrap;
 }
 
-/* ─── DAILY CUSTOMER CARD ─── */
-.customer-daily-card {
-  background: var(--surface);
+/* ─── DAILY ENTRY CARD ─── */
+.daily-card {
+  background: #fff;
   border-radius: var(--r-md);
-  padding: 13px;
-  margin-bottom: 10px;
+  padding: 12px 14px;
+  margin-bottom: 9px;
   box-shadow: var(--shadow-sm);
   border: 1.5px solid var(--border);
-  transition: border-color .15s;
 }
-.customer-daily-card:focus-within {
+.daily-card:focus-within {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(37,99,235,.07);
 }
-.card-top-row {
+.daily-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
-.customer-name {
+.daily-card-name {
   font-size: 14px;
   font-weight: 800;
   color: var(--navy);
 }
-.customer-daily-total {
-  font-size: 13px;
+.daily-card-money {
+  font-size: 12px;
   font-weight: 800;
   color: var(--green);
   background: var(--green-soft);
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 6px;
-  min-height: 22px;
 }
 
-.milk-input-row {
+.input-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-.milk-badge {
+.input-label-badge {
   font-size: 11px;
   font-weight: 700;
   color: var(--ink-secondary);
-  background: #f8fafc;
+  background: #f1f5f9;
   padding: 6px 8px;
   border-radius: 8px;
-  min-width: 68px;
-  border: 1px solid var(--border);
+  min-width: 66px;
   text-align: center;
 }
-.milk-input {
+.qty-input {
   flex: 1;
-  padding: 9px 12px;
+  padding: 8px 10px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 800;
   font-family: inherit;
   text-align: center;
   color: var(--navy);
   background: #fff;
-  transition: all .15s;
 }
-.milk-input:focus {
+.qty-input:focus {
   outline: none;
   border-color: var(--blue);
   background: var(--blue-soft);
 }
-.milk-price-hint {
+.price-note {
   font-size: 11px;
   color: var(--muted);
-  white-space: nowrap;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-/* ─── FRACTION BUTTONS IN ARABIC (الكسور بالعربي) ─── */
-.arabic-fractions-bar {
+/* ─── FRACTIONS IN ARABIC ─── */
+.frac-bar {
   display: flex;
   gap: 5px;
-  margin-top: 4px;
+  margin-top: 3px;
   margin-bottom: 8px;
-  margin-right: 76px;
+  margin-right: 74px;
   flex-wrap: wrap;
 }
-.arabic-frac-btn {
-  padding: 5px 10px;
-  border-radius: 8px;
+.frac-btn {
+  padding: 4px 9px;
+  border-radius: 7px;
   border: 1.5px solid #bfdbfe;
   background: #f0f7ff;
   color: var(--blue);
@@ -531,263 +500,194 @@ html, body {
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
-  transition: all .12s;
-  user-select: none;
 }
-.arabic-frac-btn:active {
+.frac-btn:active {
   background: var(--blue);
   color: #fff;
-  border-color: var(--blue);
-  transform: scale(.95);
 }
-.arabic-frac-clear {
+.frac-btn.clear {
   border-color: #fecaca;
   background: #fff1f2;
   color: var(--red);
 }
-.arabic-frac-clear:active {
+.frac-btn.clear:active {
   background: var(--red);
   color: #fff;
-  border-color: var(--red);
 }
 
-/* ─── CUSTOMER LIST VIEW ─── */
-.customer-item-card {
-  background: var(--surface);
+/* ─── TABLES ─── */
+.table-scroll {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.report-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.report-tbl th {
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+.report-tbl td {
+  padding: 8px 5px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.report-tbl tr:nth-child(even) td { background: #f8fafc; }
+.report-tbl .total-tr td {
+  background: var(--green-soft) !important;
+  font-weight: 900;
+  color: var(--green);
+}
+
+/* ─── CUSTOMER LIST CARDS ─── */
+.cust-card {
+  background: #fff;
   border-radius: var(--r-md);
   padding: 12px 14px;
   margin-bottom: 8px;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: transform .12s, box-shadow .12s;
 }
-.customer-item-card:active {
-  transform: scale(.99);
+.cust-card:active {
   background: #f8fafc;
 }
-.customer-item-name {
+.cust-name {
   font-size: 14px;
   font-weight: 800;
   color: var(--navy);
 }
-.customer-item-prices {
+.cust-sub {
   font-size: 11px;
   color: var(--muted);
   margin-top: 2px;
-  font-weight: 600;
 }
-.customer-item-actions {
+.cust-actions {
   display: flex;
   gap: 5px;
 }
-.icon-btn {
-  width: 34px;
-  height: 34px;
+.action-btn {
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
-  color: var(--ink-secondary);
-  font-size: 15px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all .12s;
 }
-.icon-btn:active {
-  background: #f1f5f9;
-  transform: scale(.92);
-}
-.icon-btn.edit { color: var(--blue); border-color: #bfdbfe; background: var(--blue-soft); }
-.icon-btn.delete { color: var(--red); border-color: #fecaca; background: var(--red-soft); }
-.icon-btn.whatsapp { color: #059669; border-color: #a7f3d0; background: var(--green-soft); }
+.action-btn.wa { color: #059669; border-color: #a7f3d0; background: var(--green-soft); }
+.action-btn.edit { color: var(--blue); border-color: #bfdbfe; background: var(--blue-soft); }
+.action-btn.del { color: var(--red); border-color: #fecaca; background: var(--red-soft); }
 
-/* ─── MODALS & OVERLAYS ─── */
-.modal-overlay {
+/* ─── MODALS ─── */
+.modal-bg {
   position: fixed;
   inset: 0;
   background: rgba(11,30,56,.55);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
   z-index: 100;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
-.modal-sheet {
+.modal-box {
   background: #fff;
   border-radius: 20px 20px 0 0;
-  padding: 20px 18px calc(24px + var(--safe-bottom));
+  padding: 18px 16px calc(24px + var(--safe-bottom));
   width: 100%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 88vh;
   overflow-y: auto;
   box-shadow: 0 -10px 40px rgba(0,0,0,.15);
-  animation: slideUp .22s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-.modal-header {
+.modal-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
 .modal-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--navy);
-  display: flex;
-  align-items: center;
-  gap: 7px;
 }
-.close-btn {
+.modal-close {
   background: #f1f5f9;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 16px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted);
+  font-size: 15px;
 }
 
-/* ─── BULK ADD MODAL / TABS ─── */
-.tabs-header {
-  display: flex;
-  background: #f1f5f9;
-  padding: 3px;
-  border-radius: 10px;
-  margin-bottom: 14px;
+/* ─── FORM ─── */
+.form-grp {
+  margin-bottom: 12px;
 }
-.tab-btn {
-  flex: 1;
-  padding: 7px 10px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  font-family: inherit;
+.form-lbl {
+  display: block;
   font-size: 12px;
   font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all .15s;
+  color: var(--ink-secondary);
+  margin-bottom: 4px;
 }
-.tab-btn.active {
-  background: #fff;
-  color: var(--navy);
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
-}
-.bulk-textarea {
+.form-ctl {
   width: 100%;
-  height: 140px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: #fff;
+  direction: rtl;
+}
+.form-ctl:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.bulk-area {
+  width: 100%;
+  height: 150px;
   padding: 10px 12px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
   font-family: inherit;
   font-size: 13px;
   line-height: 1.6;
-  color: var(--ink);
-  direction: rtl;
   resize: vertical;
 }
-.bulk-textarea:focus {
-  outline: none;
-  border-color: var(--blue);
-}
-.bulk-row-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-}
 
-/* ─── FORM CONTROLS ─── */
-.form-group {
-  margin-bottom: 12px;
-}
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  margin-bottom: 5px;
-}
-.form-input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--ink);
-  background: #fff;
-  direction: rtl;
-  transition: border-color .15s;
-}
-.form-input:focus {
-  outline: none;
-  border-color: var(--blue);
-}
-.form-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  cursor: pointer;
-}
-.switch {
-  width: 46px;
-  height: 26px;
-  background: var(--border);
-  border-radius: 13px;
-  position: relative;
-  cursor: pointer;
-  border: none;
-  flex-shrink: 0;
-  transition: background .2s;
-}
-.switch.on {
-  background: var(--green);
-}
-.switch::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  top: 3px;
-  right: 3px;
-  transition: transform .2s;
-  box-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-.switch.on::after {
-  transform: translateX(-20px);
-}
-
-/* ─── TOAST NOTIFICATION ─── */
-.toast-box {
+/* ─── TOAST ─── */
+.toast-msg {
   position: fixed;
   bottom: calc(76px + var(--safe-bottom));
   left: 16px;
   right: 16px;
-  max-width: 500px;
+  max-width: 450px;
   margin: 0 auto;
   background: var(--navy);
   color: #fff;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
   text-align: center;
@@ -795,175 +695,78 @@ html, body {
   box-shadow: var(--shadow-lg);
   transform: translateY(20px);
   opacity: 0;
-  transition: all .25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all .25s;
   pointer-events: none;
 }
-.toast-box.show {
+.toast-msg.show {
   transform: translateY(0);
   opacity: 1;
 }
-.toast-box.ok { background: var(--green); }
-.toast-box.err { background: var(--red); }
-.toast-box.warn { background: var(--amber); }
+.toast-msg.ok { background: var(--green); }
+.toast-msg.err { background: var(--red); }
+.toast-msg.warn { background: var(--amber); }
 
-/* ─── TABLE VIEW FOR WEEKLY SCHEDULE ─── */
-.table-wrap {
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.app-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-}
-.app-table th {
-  background: var(--navy);
-  color: #fff;
-  padding: 9px 6px;
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-}
-.app-table td {
-  padding: 8px 6px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-.app-table tr:nth-child(even) td { background: #f8fafc; }
-.app-table .tot-row td {
-  background: var(--green-soft) !important;
-  font-weight: 800;
-  color: var(--green);
-}
-
-/* ─── REPORTS & PAYOUT VIEW ─── */
-.report-customer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.paid-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all .15s;
-}
-.paid-badge.paid {
-  background: var(--green-soft);
-  color: var(--green);
-  border-color: #a7f3d0;
-}
-.paid-badge.unpaid {
-  background: var(--amber-soft);
-  color: var(--amber);
-  border-color: #fde68a;
-}
-
-/* ─── EMPTY STATE ─── */
-.empty-state {
-  text-align: center;
-  padding: 36px 16px;
-  color: var(--muted);
-}
-.empty-icon {
-  font-size: 42px;
-  margin-bottom: 10px;
-  opacity: .8;
-}
-.empty-text {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--navy);
-}
-.empty-sub {
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-/* ─── PRINT / INVOICE VIEW ─── */
+/* ─── PRINT VIEW ─── */
 @media print {
   body { background: #fff; }
   #app { max-width: 100%; box-shadow: none; }
-  .bottom-nav, .app-header, .header-actions, .btn, .date-selector, .search-bar, .arabic-fractions-bar { display: none !important; }
+  .bottom-nav, .app-header, .header-actions, .btn, .days-bar, .search-bar-wrap, .frac-bar, .week-cycle-bar { display: none !important; }
   .main-view { padding: 0 !important; }
   .card { box-shadow: none !important; border: 1px solid #000 !important; }
-  .app-table th { background: #000 !important; color: #fff !important; }
 }
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="toast" class="toast-box"></div>
+<div id="toast" class="toast-msg"></div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-//  APP STATE & INITIALIZATION
+//  STATE & INITIALIZATION
 // ══════════════════════════════════════════════════════════════════════════
 let S = {
-  view: 'home', // 'home' | 'daily' | 'customers' | 'reports' | 'history' | 'settings' | 'cDetail' | 'wDetail'
+  view: 'home', // 'home' | 'daily' | 'customers' | 'reports' | 'history' | 'cDetail' | 'settings'
   customers: [],
   week: null,
   history: [],
-  date: getTodayStr(),
-  folder: null,
-  searchQuery: '',
-  filterStatus: 'all', // 'all' | 'recorded' | 'unrecorded'
+  date: getTodayStr(), // current selected day in daily entry
+  currentWs: null,     // start Thursday of active week
+  searchQueryDaily: '',
+  searchQueryReports: '',
+  searchQueryCusts: '',
+  modal: null, // 'add' | 'edit' | 'bulkAdd' | 'backup'
   editId: null,
-  modal: null, // 'add' | 'edit' | 'bulkAdd' | 'bulkPrice' | 'share' | 'backup'
-  bulkMode: 'names', // 'names' | 'rows'
-  bulkNamesText: '',
-  bulkDefaultCow: 15,
-  bulkDefaultBufOn: false,
-  bulkDefaultBuf: 25,
-  bulkRows: [],
-  confirm: null,
   cDetailId: null,
-  wDetail: null,
-  activeShareData: null
+  confirm: null
 };
 
 // ══════════════════════════════════════════════════════════════════════════
-//  DATE & WEDNESDAY-TO-WEDNESDAY CYCLE MATH
+//  DATE & CYCLE MATH: THURSDAY TO WEDNESDAY (خميس لـ أربعاء)
 // ══════════════════════════════════════════════════════════════════════════
-const AR_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+// Days order: 0: خميس, 1: جمعة, 2: سبت, 3: أحد, 4: اثنين, 5: ثلاثاء, 6: أربعاء (يوم القبض)
+const DAY_NAMES = ['الخميس', 'الجمعة', 'السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء'];
+const MONTH_NAMES = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
 function getTodayStr() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-// Find the Wednesday start of the week for any given date
-// In JS: Sunday=0, Monday=1, Tuesday=2, Wednesday=3, Thursday=4, Friday=5, Saturday=6
-function getWeekStartWednesday(dateStr) {
+// Get the Thursday start of the week for any date
+// In JS: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
+function getWeekStartThursday(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
   const day = d.getDay();
-  // diff to previous Wednesday (day 3):
-  const diff = (day - 3 + 7) % 7;
-  const wed = new Date(d);
-  wed.setDate(d.getDate() - diff);
-  return wed.toISOString().split('T')[0];
+  // Diff to previous Thursday (4):
+  const diff = (day - 4 + 7) % 7;
+  const thur = new Date(d);
+  thur.setDate(d.getDate() - diff);
+  return thur.toISOString().split('T')[0];
 }
 
-// 7 days of the cycle starting Wednesday:
-// الأربعاء، الخميس، الجمعة، السبت، الأحد، الاثنين، الثلاثاء
-function getWeekDays(ws) {
+// 7 days of the collection week:
+// الخميس (Day 0) -> الجمعة (1) -> السبت (2) -> الأحد (3) -> الاثنين (4) -> الثلاثاء (5) -> الأربعاء (6 - يوم القبض والتصفية)
+function getCycleDays(ws) {
   const days = [];
   const start = new Date(ws + 'T00:00:00');
   for (let i = 0; i < 7; i++) {
@@ -974,44 +777,33 @@ function getWeekDays(ws) {
   return days;
 }
 
-// Next Wednesday (Payout & Settlement Day)
-function getNextWednesday(ws) {
-  const start = new Date(ws + 'T00:00:00');
-  start.setDate(start.getDate() + 7);
-  return start.toISOString().split('T')[0];
-}
-
 function formatDateAr(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
-  return `${d.getDate()} ${AR_MONTHS[d.getMonth()]}`;
-}
-
-function formatDateFullAr(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return `${AR_DAYS[d.getDay()]} ${d.getDate()} ${AR_MONTHS[d.getMonth()]}`;
+  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
 }
 
 function getDayNameAr(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
-  return AR_DAYS[d.getDay()];
+  const jsDay = d.getDay();
+  // Map JS Day to Arabic day name:
+  const map = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  return map[jsDay];
 }
 
-function getWeekLabel(ws) {
-  const days = getWeekDays(ws);
-  const nextWed = getNextWednesday(ws);
-  return `${formatDateAr(days[0])} — ${formatDateAr(nextWed)} (القبض)`;
+function getCycleLabel(ws) {
+  const days = getCycleDays(ws);
+  return `من الخميس ${formatDateAr(days[0])} إلى الأربعاء ${formatDateAr(days[6])} (يوم القبض)`;
 }
 
 function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  ARABIC FRACTIONS FORMATTING & INPUT
+//  ARABIC FRACTIONS (الكسور بالعربي)
 // ══════════════════════════════════════════════════════════════════════════
-// Convert numbers like 5.5 to "5 ونصف" or 0.25 to "ربع"
 function formatKgArabic(val) {
-  if (val === null || val === undefined || isNaN(val) || val <= 0) return '0 كجم';
+  if (!val || isNaN(val) || val <= 0) return '0 كجم';
   const num = parseFloat(val);
   const intPart = Math.floor(num);
   const frac = parseFloat((num - intPart).toFixed(4));
@@ -1020,114 +812,101 @@ function formatKgArabic(val) {
   if (Math.abs(frac - 0.25) < 0.02) fracWord = 'وربع';
   else if (Math.abs(frac - 0.5) < 0.02) fracWord = 'ونصف';
   else if (Math.abs(frac - 0.75) < 0.02) fracWord = 'وتلات أرباع';
-  else if (Math.abs(frac - 0.33) < 0.03) fracWord = 'وثلث';
   else if (frac > 0) fracWord = `و${frac.toFixed(2)}`;
 
   if (intPart === 0) {
     if (Math.abs(frac - 0.25) < 0.02) return 'ربع كجم';
     if (Math.abs(frac - 0.5) < 0.02) return 'نصف كجم';
     if (Math.abs(frac - 0.75) < 0.02) return 'تلات أرباع كجم';
-    if (Math.abs(frac - 0.33) < 0.03) return 'ثلث كجم';
     return `${num.toFixed(2)} كجم`;
   }
-
-  if (!fracWord) return `${intPart} كجم`;
-  return `${intPart} ${fracWord} كجم`;
+  return fracWord ? `${intPart} ${fracWord} كجم` : `${intPart} كجم`;
 }
 
-// Quick apply fraction button in Arabic
-function applyArabicFrac(inputId, cId, fracVal) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  const curStr = input.value.trim();
-  const curNum = parseFloat(curStr) || 0;
+function applyFraction(inputId, custId, fracVal) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const curNum = parseFloat(inp.value.trim()) || 0;
   const intPart = Math.floor(curNum + 0.001);
 
   if (fracVal === 0) {
-    // Clear
-    input.value = '';
+    inp.value = '';
   } else if (fracVal === 1) {
-    // Add 1 kg
-    input.value = curNum > 0 ? (curNum + 1).toFixed(2).replace(/\.00$/, '') : '1';
+    inp.value = curNum > 0 ? (curNum + 1).toFixed(2).replace(/\.00$/, '') : '1';
   } else {
-    // Set or replace fractional part cleanly
-    const newVal = parseFloat((intPart + fracVal).toFixed(4));
-    input.value = newVal;
+    inp.value = parseFloat((intPart + fracVal).toFixed(4));
   }
-  handleMilkInput(cId);
+  handleMilkInput(custId);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  INDEXED DB & PERSISTENCE
+//  INDEXED DB STORAGE
 // ══════════════════════════════════════════════════════════════════════════
 let _db;
 function initDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('AbyDairyV3', 1);
-    req.onupgradeneeded = (e) => {
+    const req = indexedDB.open('AbyDairyThursdayCycle', 1);
+    req.onupgradeneeded = e => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta');
       if (!db.objectStoreNames.contains('customers')) db.createObjectStore('customers', { keyPath: 'id' });
       if (!db.objectStoreNames.contains('weeks')) db.createObjectStore('weeks', { keyPath: 'ws' });
     };
-    req.onsuccess = (e) => {
-      _db = e.target.result;
-      resolve();
-    };
+    req.onsuccess = e => { _db = e.target.result; resolve(); };
     req.onerror = reject;
   });
 }
 
-function getStore(name, mode) {
-  return _db.transaction(name, mode).objectStore(name);
-}
+function dbTx(store, mode) { return _db.transaction(store, mode).objectStore(store); }
 function dbGet(store, key) {
   return new Promise((res, rej) => {
-    const q = getStore(store, 'readonly').get(key);
+    const q = dbTx(store, 'readonly').get(key);
     q.onsuccess = () => res(q.result);
     q.onerror = rej;
   });
 }
-function dbPut(store, val, key) {
+function dbPut(store, val) {
   return new Promise((res, rej) => {
-    const q = key !== undefined ? getStore(store, 'readwrite').put(val, key) : getStore(store, 'readwrite').put(val);
+    const q = dbTx(store, 'readwrite').put(val);
     q.onsuccess = () => res();
     q.onerror = rej;
   });
 }
 function dbDelete(store, key) {
   return new Promise((res, rej) => {
-    const q = getStore(store, 'readwrite').delete(key);
+    const q = dbTx(store, 'readwrite').delete(key);
     q.onsuccess = () => res();
     q.onerror = rej;
   });
 }
 function dbGetAll(store) {
   return new Promise((res, rej) => {
-    const q = getStore(store, 'readonly').getAll();
+    const q = dbTx(store, 'readonly').getAll();
     q.onsuccess = () => res(q.result || []);
     q.onerror = rej;
   });
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  DATA OPERATIONS & CALCULATION
+//  CALCULATIONS
 // ══════════════════════════════════════════════════════════════════════════
 function calcCustomerWeek(cust, week) {
-  const days = getWeekDays(week.ws);
+  const days = getCycleDays(week.ws);
   const entries = week.entries || {};
   let cowKg = 0;
   let bufKg = 0;
+
   for (const d of days) {
     const e = (entries[cust.id] || {})[d] || {};
     if (e.cow && e.cow > 0) cowKg += e.cow;
     if (cust.buffOn && e.buf && e.buf > 0) bufKg += e.buf;
   }
+
   const cowRate = cust.cow || 0;
   const bufRate = cust.buff || 0;
   const cowAmt = cowKg * cowRate;
   const bufAmt = bufKg * bufRate;
   const total = cowAmt + bufAmt;
+
   return {
     cowKg,
     bufKg,
@@ -1140,13 +919,12 @@ function calcCustomerWeek(cust, week) {
 
 async function loadData() {
   S.customers = await dbGetAll('customers');
-  // Fallback to customers.json or local demo if empty
-  if (!S.customers || S.customers.length === 0) {
+  if (!S.customers.length) {
     try {
       const res = await fetch('customers.json');
       if (res.ok) {
         const json = await res.json();
-        if (json.customers && json.customers.length > 0) {
+        if (json.customers) {
           S.customers = json.customers;
           for (const c of S.customers) await dbPut('customers', c);
         }
@@ -1155,34 +933,31 @@ async function loadData() {
   }
   S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
-  const ws = getWeekStartWednesday(getTodayStr());
-  let curWeek = await dbGet('weeks', ws);
-  if (!curWeek) {
-    // check if previous week file exists or create clean
-    curWeek = { ws, entries: {}, paid: {}, closed: false };
-    await dbPut('weeks', curWeek);
+  // Current active Thursday
+  const curThursday = getWeekStartThursday(getTodayStr());
+  S.currentWs = curThursday;
+
+  let weekData = await dbGet('weeks', curThursday);
+  if (!weekData) {
+    weekData = { ws: curThursday, entries: {}, paid: {}, closed: false };
+    await dbPut('weeks', weekData);
   }
-  if (!curWeek.paid) curWeek.paid = {};
-  S.week = curWeek;
+  if (!weekData.paid) weekData.paid = {};
+  S.week = weekData;
 
   S.history = await dbGetAll('weeks');
   S.history.sort((a, b) => b.ws.localeCompare(a.ws));
 }
 
 async function saveCustomers() {
-  for (const c of S.customers) {
-    await dbPut('customers', c);
-  }
+  for (const c of S.customers) await dbPut('customers', c);
 }
-
-async function saveCurrentWeek() {
-  if (S.week) {
-    await dbPut('weeks', S.week);
-  }
+async function saveWeek() {
+  if (S.week) await dbPut('weeks', S.week);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  VIEW RENDER ROUTER
+//  RENDER ROUTER
 // ══════════════════════════════════════════════════════════════════════════
 function render() {
   const app = document.getElementById('app');
@@ -1201,15 +976,13 @@ function render() {
     case 'reports': renderReportsView(container); break;
     case 'history': renderHistoryView(container); break;
     case 'cDetail': renderCustomerDetailView(container); break;
-    case 'wDetail': renderWeekDetailView(container); break;
     case 'settings': renderSettingsView(container); break;
     default: renderHomeView(container); break;
   }
 }
 
-// ─── HEADER COMPONENT ───
 function renderHeaderHTML() {
-  const isWed = new Date(S.date + 'T00:00:00').getDay() === 3;
+  const isWedToday = new Date().getDay() === 3;
   return `
     <header class="app-header">
       <div class="header-row">
@@ -1217,7 +990,7 @@ function renderHeaderHTML() {
           <div class="brand-icon">🥛</div>
           <div>
             <div class="brand-title">أبو يوسف للألبان</div>
-            <div class="brand-subtitle">نظام التوريد والحسابات الأسبوعية</div>
+            <div class="brand-subtitle">نظام توريد اللبن والقبض الأسبوعي</div>
           </div>
         </div>
         <div class="header-actions">
@@ -1225,21 +998,27 @@ function renderHeaderHTML() {
           <button class="header-btn" onclick="goView('settings')">⚙️</button>
         </div>
       </div>
-      <div class="cycle-strip">
-        <div>📅 دورة الأسبوع: <strong>${getWeekLabel(S.week ? S.week.ws : getTodayStr())}</strong></div>
-        <span class="cycle-badge">الحساب كل أربعاء</span>
+
+      <div class="week-cycle-bar">
+        <button class="week-nav-btn" onclick="navWeek(-1)">◀ أسبوع سابق</button>
+        <div style="text-align: center;">
+          <div style="font-weight: 800; font-size: 11px;">📅 ${getCycleLabel(S.week ? S.week.ws : S.currentWs)}</div>
+          <div style="font-size: 10px; color: #a7f3d0; margin-top: 1px;">
+            ${isWedToday ? '🔥 اليوم الأربعاء: يوم القبض وتصفية الحساب!' : 'يوم القبض: الأربعاء القادم'}
+          </div>
+        </div>
+        <button class="week-nav-btn" onclick="navWeek(1)">أسبوع تالي ▶</button>
       </div>
     </header>
   `;
 }
 
-// ─── BOTTOM NAV COMPONENT ───
 function renderBottomNavHTML() {
   const tabs = [
     { id: 'home', label: 'الرئيسية', icon: '🏠' },
-    { id: 'daily', label: 'تسجيل يومي', icon: '📝' },
+    { id: 'daily', label: 'تسجيل اللبن', icon: '📝' },
+    { id: 'reports', label: 'حساب الأربعاء', icon: '💰' },
     { id: 'customers', label: 'العملاء', icon: '👥' },
-    { id: 'reports', label: 'الحساب والقبض', icon: '💰' },
     { id: 'history', label: 'السجل', icon: '📊' }
   ];
 
@@ -1256,102 +1035,95 @@ function renderBottomNavHTML() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  HOME VIEW (OVERVIEW & QUICK ACTIONS)
+//  HOME VIEW (OVERVIEW OF WEEK & ALL CUSTOMERS)
 // ══════════════════════════════════════════════════════════════════════════
 function renderHomeView(container) {
   const w = S.week;
-  const days = getWeekDays(w.ws);
+  const days = getCycleDays(w.ws);
   const today = getTodayStr();
-  const isWednesdayToday = new Date().getDay() === 3;
+  const isWedToday = new Date().getDay() === 3;
 
-  let totalWeekMoney = 0;
-  let totalCowKg = 0;
-  let totalBufKg = 0;
-  let recordedTodayCount = 0;
+  let grandTotal = 0;
+  let grandCowKg = 0;
+  let grandBufKg = 0;
+  let recordedToday = 0;
 
   S.customers.forEach(c => {
     const res = calcCustomerWeek(c, w);
-    totalWeekMoney += res.total;
-    totalCowKg += res.cowKg;
-    totalBufKg += res.bufKg;
+    grandTotal += res.total;
+    grandCowKg += res.cowKg;
+    grandBufKg += res.bufKg;
     const e = (w.entries[c.id] || {})[today] || {};
-    if ((e.cow && e.cow > 0) || (e.buf && e.buf > 0)) {
-      recordedTodayCount++;
-    }
+    if ((e.cow && e.cow > 0) || (e.buf && e.buf > 0)) recordedToday++;
   });
-
-  const nextWed = getNextWednesday(w.ws);
 
   container.innerHTML = `
     <!-- WEDNESDAY PAYOUT ALERT -->
-    ${isWednesdayToday ? `
-      <div class="payout-alert">
-        <div class="payout-alert-title">
-          <span>🔔</span> اليوم هو الأربعاء — موعد تسليم الفلوس للعملاء!
+    ${isWedToday ? `
+      <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-md);">
+        <div style="font-size: 15px; font-weight: 900; margin-bottom: 4px;">🔔 اليوم الأربعاء — موعد تسليم الفلوس لجميع العملاء!</div>
+        <div style="font-size: 12px; opacity: .9; margin-bottom: 10px; line-height: 1.5;">
+          تم تجميع لبن الأسبوع بالكامل من الخميس حتى الأربعاء. افتح كشف الحساب لمراجعة مستحقات كل زبون وتسليمه فلوسه.
         </div>
-        <div class="payout-alert-desc">
-          العملاء جاهزون لاستلام مستحقاتهم عن الأسبوع. يمكنك مراجعة كشف الحساب وتحديد من استلم وتصفية الأسبوع.
-        </div>
-        <button class="btn btn-success btn-sm" onclick="goView('reports')">💵 فتح كشف حساب وصرف الأربعاء</button>
+        <button class="btn btn-sm" style="background: #fff; color: #047857; font-weight: 800;" onclick="goView('reports')">
+          💵 فتح كشف حساب الأربعاء وتسليم الفلوس
+        </button>
       </div>
     ` : ''}
 
-    <!-- STATS CARDS -->
+    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value">${S.customers.length}</div>
-        <div class="stat-label">إجمالي العملاء</div>
+        <div class="stat-label">إجمالي الزباين</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${recordedTodayCount} / ${S.customers.length}</div>
+        <div class="stat-value">${recordedToday} / ${S.customers.length}</div>
         <div class="stat-label">سُجِّلوا اليوم (${getDayNameAr(today)})</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${(totalCowKg + totalBufKg).toFixed(1)} <small style="font-size:12px">كجم</small></div>
-        <div class="stat-label">لبن الأسبوع (بقر: ${totalCowKg.toFixed(1)} | جاموس: ${totalBufKg.toFixed(1)})</div>
+        <div class="stat-value">${(grandCowKg + grandBufKg).toFixed(1)} <small style="font-size:11px">كجم</small></div>
+        <div class="stat-label">لبن الأسبوع (بقر: ${grandCowKg.toFixed(1)} | جاموس: ${grandBufKg.toFixed(1)})</div>
       </div>
       <div class="stat-card green">
-        <div class="stat-value">${totalWeekMoney.toLocaleString('ar-EG')} <small style="font-size:12px">ج.م</small></div>
-        <div class="stat-label">مستحقات الأسبوع للتسليم</div>
+        <div class="stat-value">${grandTotal.toLocaleString('ar-EG')} <small style="font-size:11px">ج.م</small></div>
+        <div class="stat-label">حساب كل الزباين لتسليم الأربعاء</div>
       </div>
     </div>
 
     <!-- QUICK ACTIONS -->
     <div style="display: flex; gap: 8px; margin-bottom: 12px;">
       <button class="btn btn-primary" onclick="goView('daily')" style="flex: 2;">
-        <span>📝</span> تسجيل لبن اليوم (${formatDateAr(today)})
+        <span>📝</span> تسجيل لبن اليوم (${getDayNameAr(today)})
       </button>
-      <button class="btn btn-outline" onclick="openBulkAddModal()" style="flex: 1;">
-        <span>👥</span> + عملاء بالجملة
+      <button class="btn btn-outline" onclick="openModal('bulkAdd')" style="flex: 1;">
+        <span>👥</span> + زباين بالجملة
       </button>
     </div>
 
-    <!-- WEEKLY SUMMARY TABLE -->
+    <!-- WEEKLY MATRIX TABLE -->
     <div class="card">
       <div class="card-header">
-        <div class="card-title">
-          <span>📅</span> كشف جدول الأسبوع الحالي
-        </div>
-        <button class="btn btn-sm btn-outline" onclick="goView('reports')">عرض المبالغ 💰</button>
+        <div class="card-title">📅 جدول توريد الأسبوع (${getCycleLabel(w.ws)})</div>
+        <button class="btn btn-sm btn-outline" onclick="goView('reports')">كشف الفلوس 💰</button>
       </div>
 
       ${S.customers.length === 0 ? `
-        <div class="empty-state">
-          <div class="empty-icon">👥</div>
-          <div class="empty-text">لم يتم إضافة عملاء بعد</div>
-          <div class="empty-sub">أضف عملاء لتبدأ بتسجيل كميات اللبن اليومية</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('add')" style="margin-top: 10px;">+ إضافة أول عميل</button>
+        <div style="text-align: center; padding: 24px 10px; color: var(--muted);">
+          <div style="font-size: 36px; margin-bottom: 6px;">👥</div>
+          <div style="font-weight: 700;">لا يوجد زباين مسجلين بعد</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('bulkAdd')" style="margin-top: 10px;">+ إضافة زباين دفعة واحدة</button>
         </div>
       ` : `
-        <div class="table-wrap">
-          <table class="app-table">
+        <div class="table-scroll">
+          <table class="report-tbl">
             <thead>
               <tr>
-                <th style="min-width: 90px; text-align: right; padding-right: 8px;">العميل</th>
+                <th style="text-align: right; padding-right: 8px; min-width: 80px;">الزبون</th>
                 ${days.map(d => `
                   <th>
-                    ${formatDateAr(d).split(' ')[0]}<br>
-                    <span style="font-weight: normal; opacity: .8">${getDayNameAr(d).slice(0, 3)}</span>
+                    ${getDayNameAr(d).slice(0,3)}<br>
+                    <span style="font-size: 9px; opacity: .8;">${formatDateAr(d).split(' ')[0]}</span>
                   </th>
                 `).join('')}
                 <th>كجم</th>
@@ -1360,7 +1132,7 @@ function renderHomeView(container) {
             </thead>
             <tbody>
               ${S.customers.map(c => {
-                const r = calcCustomerWeek(c, w);
+                const res = calcCustomerWeek(c, w);
                 return `
                   <tr>
                     <td style="text-align: right; font-weight: 800; padding-right: 8px; color: var(--navy);">
@@ -1369,19 +1141,19 @@ function renderHomeView(container) {
                     ${days.map(d => {
                       const e = (w.entries[c.id] || {})[d] || {};
                       const t = (e.cow || 0) + (e.buf || 0);
-                      const isTod = d === today;
+                      const isT = d === today;
                       return `
-                        <td style="${isTod ? 'background: #eff6ff; font-weight: 800;' : ''}">
+                        <td style="${isT ? 'background: #eff6ff; font-weight: 800;' : ''}">
                           ${t > 0 ? (t % 1 === 0 ? t : t.toFixed(2)) : '<span style="color: #cbd5e1;">ـ</span>'}
                         </td>
                       `;
                     }).join('')}
-                    <td style="font-weight: 800;">${r.totalKg > 0 ? r.totalKg.toFixed(1) : 'ـ'}</td>
-                    <td style="color: var(--green); font-weight: 900;">${r.total > 0 ? r.total.toFixed(0) : 'ـ'}</td>
+                    <td style="font-weight: 800;">${res.totalKg > 0 ? res.totalKg.toFixed(1) : 'ـ'}</td>
+                    <td style="color: var(--green); font-weight: 900;">${res.total > 0 ? res.total.toFixed(0) : 'ـ'}</td>
                   </tr>
                 `;
               }).join('')}
-              <tr class="tot-row">
+              <tr class="total-tr">
                 <td style="text-align: right; padding-right: 8px;">الإجمالي</td>
                 ${days.map(d => {
                   let daySum = 0;
@@ -1391,140 +1163,110 @@ function renderHomeView(container) {
                   });
                   return `<td>${daySum > 0 ? (daySum % 1 === 0 ? daySum : daySum.toFixed(1)) : 'ـ'}</td>`;
                 }).join('')}
-                <td>${(totalCowKg + totalBufKg).toFixed(1)}</td>
-                <td>${totalWeekMoney.toFixed(0)}</td>
+                <td>${(grandCowKg + grandBufKg).toFixed(1)}</td>
+                <td>${grandTotal.toFixed(0)}</td>
               </tr>
             </tbody>
           </table>
         </div>
       `}
     </div>
-
-    <!-- WEEK CYCLE FOOTER NOTE -->
-    <div style="text-align: center; font-size: 11px; color: var(--muted); padding: 10px 0;">
-      🥛 دورة الحساب تبدأ الأربعاء وتنتهي الأربعاء · كل الفلوس تُحسب أسبوعياً للعملاء
-    </div>
   `;
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  DAILY MILK ENTRY VIEW (تسجيل اللبن اليومي)
+//  DAILY MILK ENTRY VIEW (تعديل وإضافة أي يوم بالأسبوع)
 // ══════════════════════════════════════════════════════════════════════════
 function renderDailyView(container) {
   const w = S.week;
-  const days = getWeekDays(w.ws);
+  const days = getCycleDays(w.ws);
   const curDate = S.date;
 
-  // Filter customers based on search
-  const query = S.searchQuery.trim().toLowerCase();
-  let list = S.customers.filter(c => !query || c.name.toLowerCase().includes(query));
-
-  // Filter tab
-  if (S.filterStatus === 'recorded') {
-    list = list.filter(c => {
-      const e = (w.entries[c.id] || {})[curDate] || {};
-      return (e.cow && e.cow > 0) || (e.buf && e.buf > 0);
-    });
-  } else if (S.filterStatus === 'unrecorded') {
-    list = list.filter(c => {
-      const e = (w.entries[c.id] || {})[curDate] || {};
-      return !(e.cow && e.cow > 0) && !(e.buf && e.buf > 0);
-    });
-  }
+  // Search filter
+  const q = S.searchQueryDaily.trim().toLowerCase();
+  const list = S.customers.filter(c => !q || c.name.toLowerCase().includes(q));
 
   container.innerHTML = `
-    <!-- DATE CHIPS SCROLLER -->
-    <div class="date-selector">
-      ${days.map(d => {
+    <!-- DAYS OF THE WEEK BAR (خميس -> أربعاء) -->
+    <div style="font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+      اختر أي يوم لتسجيل أو تعديل الكميات:
+    </div>
+    <div class="days-bar">
+      ${days.map((d, idx) => {
         const isSel = d === curDate;
-        const isWed = new Date(d + 'T00:00:00').getDay() === 3;
-        const dObj = new Date(d + 'T00:00:00');
+        const isPayout = idx === 6; // الأربعاء
         return `
-          <button class="date-chip ${isSel ? 'active' : ''} ${isWed ? 'is-wednesday' : ''}" onclick="selectDailyDate('${d}')">
-            <div class="chip-day">${AR_DAYS[dObj.getDay()]}</div>
-            <div class="chip-num">${dObj.getDate()}</div>
+          <button class="day-chip ${isSel ? 'active' : ''} ${isPayout ? 'is-payout' : ''}" onclick="selectDailyDate('${d}')">
+            <div class="chip-name">${DAY_NAMES[idx]}</div>
+            <div class="chip-date">${formatDateAr(d).split(' ')[0]}</div>
           </button>
         `;
       }).join('')}
     </div>
 
-    <!-- DATE HEADER & SEARCH -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <h2 style="font-size: 15px; font-weight: 800; color: var(--navy);">
-        📝 تسجيل يوم: ${formatDateFullAr(curDate)}
+    <!-- HEADER FOR SELECTED DAY -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <h2 style="font-size: 14px; font-weight: 800; color: var(--navy);">
+        📝 تسجيل كميات يوم: ${getDayNameAr(curDate)} (${formatDateAr(curDate)})
       </h2>
-      <span style="font-size: 11px; color: var(--muted); font-weight: 600;">
-        ${list.length} من أصل ${S.customers.length}
+      <span style="font-size: 11px; color: var(--muted); font-weight: 700;">
+        ${list.length} زبون
       </span>
     </div>
 
-    <!-- SEARCH & STATUS FILTER -->
-    <div class="search-bar">
-      <div class="search-input-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" type="text" placeholder="بحث باسم العميل..." value="${S.searchQuery}" oninput="handleSearchDaily(this.value)">
-      </div>
+    <!-- SEARCH FILTER -->
+    <div class="search-bar-wrap">
+      <span class="search-bar-icon">🔍</span>
+      <input class="search-bar-input" type="text" placeholder="فلتر وبحث باسم الزبون..." value="${S.searchQueryDaily}" oninput="handleSearchDaily(this.value)">
     </div>
 
-    <div class="tabs-header">
-      <button class="tab-btn ${S.filterStatus === 'all' ? 'active' : ''}" onclick="setFilterStatus('all')">الكل (${S.customers.length})</button>
-      <button class="tab-btn ${S.filterStatus === 'recorded' ? 'active' : ''}" onclick="setFilterStatus('recorded')">سُجِّلوا ✓</button>
-      <button class="tab-btn ${S.filterStatus === 'unrecorded' ? 'active' : ''}" onclick="setFilterStatus('unrecorded')">لم يسجلوا بعد ⏱️</button>
-    </div>
-
-    <!-- CUSTOMER ENTRY CARDS -->
-    <div id="customerCardsList">
+    <!-- CUSTOMERS LIST FOR THIS DAY -->
+    <div id="dailyCardsList">
       ${list.length === 0 ? `
-        <div class="empty-state">
-          <div class="empty-icon">🔍</div>
-          <div class="empty-text">لا توجد نتائج مطابقة</div>
-          <div class="empty-sub">جرب البحث باسم آخر أو غير التصفية</div>
+        <div style="text-align: center; padding: 30px; color: var(--muted);">
+          <div>🔍 لا توجد نتائج مطابقة للاسم</div>
         </div>
-      ` : list.map(c => renderCustomerDailyCardHTML(c, curDate, w)).join('')}
+      ` : list.map(c => renderDailyCustomerCard(c, curDate, w)).join('')}
     </div>
 
     <!-- SAVE BUTTON -->
     <div style="position: sticky; bottom: calc(72px + var(--safe-bottom)); z-index: 30; padding: 10px 0; background: linear-gradient(to top, var(--bg) 80%, transparent);">
       <button class="btn btn-success" onclick="saveDayEntries()">
-        <span>💾</span> حفظ بيانات اليوم (${formatDateAr(curDate)})
+        <span>💾</span> حفظ بيانات يوم ${getDayNameAr(curDate)}
       </button>
     </div>
   `;
 
-  // auto scroll active date into view
   setTimeout(() => {
-    const activeChip = document.querySelector('.date-chip.active');
+    const activeChip = document.querySelector('.day-chip.active');
     if (activeChip) activeChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }, 50);
+  }, 40);
 }
 
-// Single Daily Entry Card
-function renderCustomerDailyCardHTML(cust, curDate, week) {
-  const entry = (week.entries[cust.id] || {})[curDate] || {};
-  // CRITICAL REQUIREMENT:
-  // "تخلي قائمه ادخال معدل اللبن الي تم تحصيله تكون فارغ ميكونش فيها صفر محطوط من الاول"
-  // If entry.cow is empty or 0, value MUST be empty string ""!
-  const cowVal = (entry.cow !== undefined && entry.cow !== null && entry.cow > 0) ? entry.cow : '';
-  const bufVal = (entry.buf !== undefined && entry.buf !== null && entry.buf > 0) ? entry.buf : '';
+function renderDailyCustomerCard(cust, dateStr, week) {
+  const entry = (week.entries[cust.id] || {})[dateStr] || {};
+  // Value MUST be empty string if 0 or undefined (never pre-filled with 0)
+  const cowVal = (entry.cow && entry.cow > 0) ? entry.cow : '';
+  const bufVal = (entry.buf && entry.buf > 0) ? entry.buf : '';
 
   const cowKg = parseFloat(cowVal) || 0;
   const bufKg = cust.buffOn ? (parseFloat(bufVal) || 0) : 0;
   const totalMoney = (cowKg * (cust.cow || 0)) + (bufKg * (cust.buff || 0));
 
   return `
-    <div class="customer-daily-card" id="card-${cust.id}">
-      <div class="card-top-row">
-        <div class="customer-name">${cust.name}</div>
-        <div class="customer-daily-total" id="tot-${cust.id}">
+    <div class="daily-card" id="card-${cust.id}">
+      <div class="daily-card-top">
+        <div class="daily-card-name">${cust.name}</div>
+        <div class="daily-card-money" id="money-${cust.id}">
           ${totalMoney > 0 ? `${totalMoney.toFixed(2)} ج.م` : ''}
         </div>
       </div>
 
-      <!-- COW MILK INPUT -->
-      <div class="milk-input-row">
-        <span class="milk-badge">🐄 بقر</span>
+      <!-- COW INPUT -->
+      <div class="input-row">
+        <span class="input-label-badge">🐄 بقر</span>
         <input 
-          class="milk-input" 
+          class="qty-input" 
           type="number" 
           step="0.01" 
           min="0"
@@ -1533,24 +1275,24 @@ function renderCustomerDailyCardHTML(cust, curDate, week) {
           value="${cowVal}" 
           oninput="handleMilkInput('${cust.id}')"
         >
-        <span class="milk-price-hint">${cust.cow} ج/كجم</span>
+        <span class="price-note">${cust.cow ? cust.cow + ' ج' : 'بدون سعر'}</span>
       </div>
 
-      <!-- ARABIC FRACTIONS BUTTONS FOR COW -->
-      <div class="arabic-fractions-bar">
-        <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('cow-${cust.id}','${cust.id}',0.25)">+ ربع</button>
-        <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('cow-${cust.id}','${cust.id}',0.5)">+ نص</button>
-        <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('cow-${cust.id}','${cust.id}',0.75)">+ تلات أرباع</button>
-        <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('cow-${cust.id}','${cust.id}',1)">+ كيلو</button>
-        <button type="button" class="arabic-frac-btn arabic-frac-clear" onclick="applyArabicFrac('cow-${cust.id}','${cust.id}',0)">مسح ✕</button>
+      <!-- FRACTIONS IN ARABIC FOR COW -->
+      <div class="frac-bar">
+        <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',0.25)">+ ربع</button>
+        <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',0.5)">+ نص</button>
+        <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',0.75)">+ تلات أرباع</button>
+        <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',1)">+ كيلو</button>
+        <button type="button" class="frac-btn clear" onclick="applyFraction('cow-${cust.id}','${cust.id}',0)">مسح ✕</button>
       </div>
 
-      <!-- BUFFALO MILK INPUT (IF ENABLED) -->
+      <!-- BUFFALO INPUT -->
       ${cust.buffOn ? `
-        <div class="milk-input-row" style="margin-top: 8px;">
-          <span class="milk-badge">🐃 جاموس</span>
+        <div class="input-row" style="margin-top: 6px;">
+          <span class="input-label-badge">🐃 جاموس</span>
           <input 
-            class="milk-input" 
+            class="qty-input" 
             type="number" 
             step="0.01" 
             min="0"
@@ -1559,74 +1301,56 @@ function renderCustomerDailyCardHTML(cust, curDate, week) {
             value="${bufVal}" 
             oninput="handleMilkInput('${cust.id}')"
           >
-          <span class="milk-price-hint">${cust.buff} ج/كجم</span>
+          <span class="price-note">${cust.buff ? cust.buff + ' ج' : 'بدون سعر'}</span>
         </div>
-        <!-- ARABIC FRACTIONS BUTTONS FOR BUFFALO -->
-        <div class="arabic-fractions-bar">
-          <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('buf-${cust.id}','${cust.id}',0.25)">+ ربع</button>
-          <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('buf-${cust.id}','${cust.id}',0.5)">+ نص</button>
-          <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('buf-${cust.id}','${cust.id}',0.75)">+ تلات أرباع</button>
-          <button type="button" class="arabic-frac-btn" onclick="applyArabicFrac('buf-${cust.id}','${cust.id}',1)">+ كيلو</button>
-          <button type="button" class="arabic-frac-btn arabic-frac-clear" onclick="applyArabicFrac('buf-${cust.id}','${cust.id}',0)">مسح ✕</button>
+        <div class="frac-bar">
+          <button type="button" class="frac-btn" onclick="applyFraction('buf-${cust.id}','${cust.id}',0.25)">+ ربع</button>
+          <button type="button" class="frac-btn" onclick="applyFraction('buf-${cust.id}','${cust.id}',0.5)">+ نص</button>
+          <button type="button" class="frac-btn" onclick="applyFraction('buf-${cust.id}','${cust.id}',0.75)">+ تلات أرباع</button>
+          <button type="button" class="frac-btn" onclick="applyFraction('buf-${cust.id}','${cust.id}',1)">+ كيلو</button>
+          <button type="button" class="frac-btn clear" onclick="applyFraction('buf-${cust.id}','${cust.id}',0)">مسح ✕</button>
         </div>
       ` : ''}
     </div>
   `;
 }
 
-function handleMilkInput(cId) {
-  const cust = S.customers.find(c => c.id === cId);
+function handleMilkInput(custId) {
+  const cust = S.customers.find(c => c.id === custId);
   if (!cust) return;
 
-  const cowInput = document.getElementById(`cow-${cId}`);
-  const bufInput = document.getElementById(`buf-${cId}`);
+  const cowInp = document.getElementById(`cow-${custId}`);
+  const bufInp = document.getElementById(`buf-${custId}`);
 
-  const cowVal = cowInput ? cowInput.value.trim() : '';
-  const bufVal = bufInput ? bufInput.value.trim() : '';
-
-  const cowNum = parseFloat(cowVal) || 0;
-  const bufNum = parseFloat(bufVal) || 0;
+  const cowNum = cowInp ? (parseFloat(cowInp.value) || 0) : 0;
+  const bufNum = bufInp ? (parseFloat(bufInp.value) || 0) : 0;
 
   const total = (cowNum * (cust.cow || 0)) + (cust.buffOn ? (bufNum * (cust.buff || 0)) : 0);
 
-  const totEl = document.getElementById(`tot-${cId}`);
-  if (totEl) {
-    totEl.textContent = total > 0 ? `${total.toFixed(2)} ج.م` : '';
+  const moneyEl = document.getElementById(`money-${custId}`);
+  if (moneyEl) {
+    moneyEl.textContent = total > 0 ? `${total.toFixed(2)} ج.م` : '';
   }
 
-  // Live update in state
-  if (!S.week.entries[cId]) S.week.entries[cId] = {};
-  if (!S.week.entries[cId][S.date]) S.week.entries[cId][S.date] = {};
+  // Update in state
+  if (!S.week.entries[custId]) S.week.entries[custId] = {};
+  if (!S.week.entries[custId][S.date]) S.week.entries[custId][S.date] = {};
 
-  if (cowNum > 0) {
-    S.week.entries[cId][S.date].cow = cowNum;
-  } else {
-    delete S.week.entries[cId][S.date].cow;
-  }
+  if (cowNum > 0) S.week.entries[custId][S.date].cow = cowNum;
+  else delete S.week.entries[custId][S.date].cow;
 
-  if (cust.buffOn && bufNum > 0) {
-    S.week.entries[cId][S.date].buf = bufNum;
-  } else {
-    delete S.week.entries[cId][S.date].buf;
-  }
+  if (cust.buffOn && bufNum > 0) S.week.entries[custId][S.date].buf = bufNum;
+  else delete S.week.entries[custId][S.date].buf;
 
-  // Debounced auto-save
-  clearTimeout(S._autoSaveTimer);
-  S._autoSaveTimer = setTimeout(() => {
-    saveCurrentWeek();
-  }, 1000);
+  // Auto-save debounce
+  clearTimeout(S._saveTimer);
+  S._saveTimer = setTimeout(() => { saveWeek(); }, 800);
 }
 
 async function saveDayEntries() {
-  S.customers.forEach(cust => {
-    const cowInput = document.getElementById(`cow-${cust.id}`);
-    const bufInput = document.getElementById(`buf-${cust.id}`);
-    if (cowInput || bufInput) {
-      handleMilkInput(cust.id);
-    }
-  });
-  await saveCurrentWeek();
-  showToast(`✅ تم حفظ بيانات يوم ${formatDateAr(S.date)} بنجاح`, 'ok');
+  S.customers.forEach(c => handleMilkInput(c.id));
+  await saveWeek();
+  showToast(`✅ تم حفظ بيانات يوم ${getDayNameAr(S.date)} بنجاح`, 'ok');
 }
 
 function selectDailyDate(d) {
@@ -1635,93 +1359,26 @@ function selectDailyDate(d) {
 }
 
 function handleSearchDaily(q) {
-  S.searchQuery = q;
-  renderDailyView(document.getElementById('mainContainer'));
-}
-
-function setFilterStatus(status) {
-  S.filterStatus = status;
+  S.searchQueryDaily = q;
   renderDailyView(document.getElementById('mainContainer'));
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  CUSTOMERS MANAGEMENT VIEW
-// ══════════════════════════════════════════════════════════════════════════
-function renderCustomersView(container) {
-  const query = S.searchQuery.trim().toLowerCase();
-  const list = S.customers.filter(c => !query || c.name.toLowerCase().includes(query));
-
-  container.innerHTML = `
-    <!-- TOP ACTIONS -->
-    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-      <button class="btn btn-primary" onclick="openModal('add')" style="flex: 1;">
-        <span>➕</span> إضافة عميل واحد
-      </button>
-      <button class="btn btn-success" onclick="openBulkAddModal()" style="flex: 1.2;">
-        <span>👥</span> إضافة عملاء بالجملة
-      </button>
-    </div>
-
-    <!-- SEARCH BAR -->
-    <div class="search-bar">
-      <div class="search-input-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" type="text" placeholder="بحث عن عميل بالاسم..." value="${S.searchQuery}" oninput="handleSearchCust(this.value)">
-      </div>
-      <button class="btn btn-sm btn-outline" onclick="openModal('bulkPrice')">💲 تعديل الأسعار</button>
-    </div>
-
-    <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px;">
-      العملاء المسجلون (${list.length}):
-    </div>
-
-    <!-- CUSTOMERS LIST -->
-    <div>
-      ${list.length === 0 ? `
-        <div class="empty-state">
-          <div class="empty-icon">👥</div>
-          <div class="empty-text">لا يوجد عملاء مطابقة للبحث</div>
-          <div class="empty-sub">اضغط على زر الإضافة لإضافة موردين جدد</div>
-        </div>
-      ` : list.map(c => `
-        <div class="customer-item-card" onclick="openCustomerDetail('${c.id}')">
-          <div>
-            <div class="customer-item-name">${c.name}</div>
-            <div class="customer-item-prices">
-              🐄 بقر: ${c.cow} ج/كجم 
-              ${c.buffOn ? `· 🐃 جاموس: ${c.buff} ج/كجم` : ''}
-            </div>
-          </div>
-          <div class="customer-item-actions" onclick="event.stopPropagation()">
-            <button class="icon-btn whatsapp" title="واتساب" onclick="shareCustomerWhatsApp('${c.id}')">💬</button>
-            <button class="icon-btn edit" title="تعديل" onclick="openEditModal('${c.id}')">✏️</button>
-            <button class="icon-btn delete" title="حذف" onclick="confirmDeleteCustomer('${c.id}')">🗑️</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function handleSearchCust(q) {
-  S.searchQuery = q;
-  renderCustomersView(document.getElementById('mainContainer'));
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  REPORTS & WEDNESDAY PAYOUTS VIEW (كشف الحساب والقبض)
+//  REPORTS & WEDNESDAY PAYOUTS (حساب كل الزباين وحساب كل زبون لوحده)
 // ══════════════════════════════════════════════════════════════════════════
 function renderReportsView(container) {
   const w = S.week;
-  const days = getWeekDays(w.ws);
-  const nextWed = getNextWednesday(w.ws);
+  const days = getCycleDays(w.ws);
 
   let grandTotal = 0;
   let grandCowKg = 0;
   let grandBufKg = 0;
   let paidCount = 0;
 
-  const rows = S.customers.map(c => {
+  // Search filter
+  const q = S.searchQueryReports.trim().toLowerCase();
+
+  const allRows = S.customers.map(c => {
     const res = calcCustomerWeek(c, w);
     grandTotal += res.total;
     grandCowKg += res.cowKg;
@@ -1731,104 +1388,246 @@ function renderReportsView(container) {
     return { cust: c, ...res, isPaid };
   });
 
+  const filteredRows = allRows.filter(r => !q || r.cust.name.toLowerCase().includes(q));
+
   container.innerHTML = `
-    <!-- REPORT HEADER CARD -->
+    <!-- HEADER SUMMARY CARD -->
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">💰 كشف حساب أسبوع: ${getWeekLabel(w.ws)}</div>
+          <div class="card-title">💰 كشف حساب الأربعاء (حساب كل الزباين)</div>
           <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
-            تصفية الحسابات وتسليم الفلوس للعملاء (الأربعاء للأربعاء)
+            دورة الأسبوع: ${getCycleLabel(w.ws)}
           </div>
         </div>
         <button class="btn btn-sm btn-outline" onclick="window.print()">🖨️ طباعة</button>
       </div>
 
-      <div class="stats-grid" style="margin-bottom: 0;">
+      <div class="stats-grid" style="margin-bottom: 4px;">
         <div class="stat-card green">
-          <div class="stat-value">${grandTotal.toLocaleString('ar-EG')} <small style="font-size:12px">ج.م</small></div>
-          <div class="stat-label">إجمالي الفلوس المستحقة للعملاء</div>
+          <div class="stat-value">${grandTotal.toLocaleString('ar-EG')} <small style="font-size:11px">ج.م</small></div>
+          <div class="stat-label">المبلغ الإجمالي المطلوب لجميع الزباين</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">${paidCount} / ${S.customers.length}</div>
-          <div class="stat-label">عملاء تم تسليمهم فلوسهم ✅</div>
+          <div class="stat-label">زباين استلموا فلوسهم ✅</div>
         </div>
       </div>
     </div>
 
-    <!-- ACTIONS ROW -->
-    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-      <button class="btn btn-outline" onclick="exportWeekCSV()" style="flex: 1;">
-        <span>📊</span> تصدير Excel / CSV
+    <!-- EXPORT & WHATSAPP BUTTONS -->
+    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+      <button class="btn btn-outline btn-sm" onclick="shareGeneralWhatsApp()" style="flex: 1;">
+        💬 تقرير الأسبوع واتساب
       </button>
-      <button class="btn btn-outline" onclick="shareGeneralWhatsApp()" style="flex: 1;">
-        <span>💬</span> تقرير واتساب
+      <button class="btn btn-outline btn-sm" onclick="exportWeekCSV()" style="flex: 1;">
+        📊 تصدير Excel
       </button>
     </div>
 
-    <!-- CUSTOMERS PAYOUT LIST -->
+    <!-- SEARCH FILTER FOR CUSTOMERS -->
+    <div class="search-bar-wrap">
+      <span class="search-bar-icon">🔍</span>
+      <input class="search-bar-input" type="text" placeholder="ابحث عن أي زبون لمعرفة حسابه لوحده..." value="${S.searchQueryReports}" oninput="handleSearchReports(this.value)">
+    </div>
+
+    <!-- INDIVIDUAL CUSTOMERS BREAKDOWN -->
     <div class="card">
-      <div class="card-title" style="margin-bottom: 10px;">📋 تفاصيل كشف حساب كل عميل</div>
-      
-      ${rows.length === 0 ? `
-        <div class="empty-state">
-          <div class="empty-icon">💰</div>
-          <div class="empty-text">لا يوجد عملاء لحسابهم</div>
+      <div class="card-title" style="margin-bottom: 10px;">📋 حساب كل زبون لوحده بالتفصيل:</div>
+
+      ${filteredRows.length === 0 ? `
+        <div style="text-align: center; padding: 20px; color: var(--muted);">
+          <div>🔍 لا توجد نتائج مطابقة للبحث</div>
         </div>
-      ` : rows.map(r => `
-        <div class="report-customer-row">
-          <div style="flex: 1;">
-            <div style="font-size: 14px; font-weight: 800; color: var(--navy);">${r.cust.name}</div>
+      ` : filteredRows.map(r => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+          <div style="flex: 1; cursor: pointer;" onclick="openCustomerDetail('${r.cust.id}')">
+            <div style="font-size: 14px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+              ${r.cust.name}
+              <span style="font-size: 10px; color: var(--blue); font-weight: 700;">(عرض أيامه ◀)</span>
+            </div>
             <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
               🐄 بقر: ${r.cowKg.toFixed(2)} كجم (${r.cowAmt.toFixed(2)} ج)
               ${r.cust.buffOn && r.bufKg > 0 ? ` · 🐃 جاموس: ${r.bufKg.toFixed(2)} كجم (${r.bufAmt.toFixed(2)} ج)` : ''}
             </div>
-            <div style="font-size: 11px; color: var(--ink-secondary); font-weight: 700; margin-top: 1px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--ink-secondary); margin-top: 1px;">
               إجمالي اللبن: ${formatKgArabic(r.totalKg)}
             </div>
           </div>
 
-          <div style="text-align: left; margin-left: 10px;">
+          <div style="text-align: left; margin-left: 8px;">
             <div style="font-size: 16px; font-weight: 900; color: var(--green);">
-              ${r.total.toFixed(2)} <span style="font-size: 11px; font-weight: normal;">ج.م</span>
+              ${r.total.toFixed(2)} <span style="font-size: 10px; font-weight: normal;">ج.م</span>
             </div>
-            <div style="margin-top: 4px; display: flex; gap: 4px;">
+            <div style="display: flex; gap: 4px; margin-top: 4px;">
               <button 
-                class="paid-badge ${r.isPaid ? 'paid' : 'unpaid'}" 
+                class="btn btn-sm" 
+                style="padding: 3px 8px; font-size: 11px; ${r.isPaid ? 'background: #d1fae5; color: #047857;' : 'background: #fef3c7; color: #b45309;'}"
                 onclick="togglePaidStatus('${r.cust.id}')"
               >
-                ${r.isPaid ? 'تم القبض ✅' : 'لم يقبض بعد ⏳'}
+                ${r.isPaid ? 'قبض ✅' : 'لم يقبض ⏳'}
               </button>
-              <button class="icon-btn whatsapp" style="width: 26px; height: 26px; font-size: 12px;" onclick="shareCustomerWhatsApp('${r.cust.id}')">💬</button>
+              <button class="action-btn wa" title="إرسال الفاتورة عبر واتساب" onclick="shareCustomerWhatsApp('${r.cust.id}')">💬</button>
             </div>
           </div>
         </div>
       `).join('')}
 
       <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; margin-top: 6px; border-top: 2px solid var(--navy);">
-        <div style="font-size: 15px; font-weight: 900; color: var(--navy);">الإجمالي الكلي للأسبوع:</div>
-        <div style="font-size: 20px; font-weight: 900; color: var(--green);">${grandTotal.toLocaleString('ar-EG')} ج.م</div>
+        <div style="font-size: 15px; font-weight: 900; color: var(--navy);">الإجمالي المطلوب لكل الزباين:</div>
+        <div style="font-size: 18px; font-weight: 900; color: var(--green);">${grandTotal.toLocaleString('ar-EG')} ج.م</div>
       </div>
     </div>
 
     <!-- CLOSE WEEK & START NEW CYCLE -->
     <div class="card" style="border: 2px dashed var(--amber); background: #fffcf0;">
-      <div class="card-title" style="color: var(--amber);">⚠️ إغلاق أسبوع ${getWeekLabel(w.ws)}</div>
-      <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.6;">
-        بعد تسليم الفلوس لجميع العملاء يوم الأربعاء، اضغط هنا لأرشفة الأسبوع الحالي في السجل، وبدء أسبوع جديد نظيف من الأربعاء القادم مع الحفاظ على العملاء والأسعار.
+      <div class="card-title" style="color: var(--amber);">⚠️ إغلاق حساب هذا الأسبوع</div>
+      <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 10px; line-height: 1.5;">
+        بعد تسليم الفلوس للزباين يوم الأربعاء، اضغط هنا لتصفية الأسبوع وأرشفته والبدء في أسبوع جديد ابتداءً من الخميس القادم.
       </div>
       <button class="btn btn-amber" onclick="confirmCloseWeek()">
-        <span>🔄</span> تصفية وإغلاق الأسبوع وبدء جديد
+        <span>🔄</span> تصفية وإغلاق أسبوع ${formatDateAr(days[6])} وبدء أسبوع جديد
       </button>
     </div>
   `;
 }
 
+function handleSearchReports(q) {
+  S.searchQueryReports = q;
+  renderReportsView(document.getElementById('mainContainer'));
+}
+
 async function togglePaidStatus(cId) {
   if (!S.week.paid) S.week.paid = {};
   S.week.paid[cId] = !S.week.paid[cId];
-  await saveCurrentWeek();
+  await saveWeek();
   renderReportsView(document.getElementById('mainContainer'));
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CUSTOMER DETAIL VIEW (حساب الزبون بكل يوم في الأسبوع)
+// ══════════════════════════════════════════════════════════════════════════
+function openCustomerDetail(id) {
+  S.cDetailId = id;
+  goView('cDetail');
+}
+
+function renderCustomerDetailView(container) {
+  const c = S.customers.find(x => x.id === S.cDetailId);
+  if (!c) { goView('reports'); return; }
+
+  const w = S.week;
+  const days = getCycleDays(w.ws);
+  const res = calcCustomerWeek(c, w);
+
+  container.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h2 style="font-size: 15px; font-weight: 800; color: var(--navy);">👤 كشف حساب: ${c.name}</h2>
+      <button class="btn btn-sm btn-outline" onclick="goView('reports')">◀ رجوع لكشف الأربعاء</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 تفاصيل مستحقاته يوم الأربعاء</div>
+      <div class="stats-grid" style="margin-bottom: 8px;">
+        <div class="stat-card">
+          <div class="stat-value">${res.totalKg.toFixed(1)} <small style="font-size:11px">كجم</small></div>
+          <div class="stat-label">بقر: ${res.cowKg.toFixed(1)} كجم | جاموس: ${res.bufKg.toFixed(1)} كجم</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-value">${res.total.toFixed(2)} <small style="font-size:11px">ج.م</small></div>
+          <div class="stat-label">المبلغ المستحق له</div>
+        </div>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="shareCustomerWhatsApp('${c.id}')">💬 إرسال فاتورته بالكامل على واتساب</button>
+    </div>
+
+    <!-- DAILY BREAKDOWN (خميس لـ أربعاء) -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom: 8px;">📅 ما وردّه الزبون في كل يوم من أيام الأسبوع:</div>
+      ${days.map((d, idx) => {
+        const e = (w.entries[c.id] || {})[d] || {};
+        const cow = e.cow || 0;
+        const buf = c.buffOn ? (e.buf || 0) : 0;
+        const tot = cow + buf;
+        const isPayoutDay = idx === 6;
+        return `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); ${isPayoutDay ? 'background: #f0fdf4; padding: 10px 8px; border-radius: 8px;' : ''}">
+            <div>
+              <div style="font-weight: 800; font-size: 13px;">
+                ${DAY_NAMES[idx]} (${formatDateAr(d)}) ${isPayoutDay ? '💰 يوم القبض' : ''}
+              </div>
+              ${tot > 0 ? `
+                <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                  🐄 بقر: ${cow > 0 ? formatKgArabic(cow) : 'ـ'} 
+                  ${c.buffOn && buf > 0 ? ` · 🐃 جاموس: ${formatKgArabic(buf)}` : ''}
+                </div>
+              ` : ''}
+            </div>
+            <div style="font-weight: 800; color: ${tot > 0 ? 'var(--green)' : 'var(--muted)'};">
+              ${tot > 0 ? `${tot.toFixed(2)} كجم` : 'لم يورد'}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CUSTOMERS MANAGEMENT VIEW
+// ══════════════════════════════════════════════════════════════════════════
+function renderCustomersView(container) {
+  const q = S.searchQueryCusts.trim().toLowerCase();
+  const list = S.customers.filter(c => !q || c.name.toLowerCase().includes(q));
+
+  container.innerHTML = `
+    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+      <button class="btn btn-primary" onclick="openModal('add')" style="flex: 1;">
+        <span>➕</span> إضافة زبون
+      </button>
+      <button class="btn btn-success" onclick="openModal('bulkAdd')" style="flex: 1.2;">
+        <span>👥</span> إضافة زباين بالجملة
+      </button>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar-wrap">
+      <span class="search-bar-icon">🔍</span>
+      <input class="search-bar-input" type="text" placeholder="بحث وفلترة الزباين بالاسم..." value="${S.searchQueryCusts}" oninput="handleSearchCusts(this.value)">
+    </div>
+
+    <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px;">
+      الزباين المسجلين (${list.length}):
+    </div>
+
+    <div>
+      ${list.length === 0 ? `
+        <div style="text-align: center; padding: 30px; color: var(--muted);">
+          <div>👥 لا يوجد زباين مطابقين</div>
+        </div>
+      ` : list.map(c => `
+        <div class="cust-card" onclick="openCustomerDetail('${c.id}')">
+          <div>
+            <div class="cust-name">${c.name}</div>
+            <div class="cust-sub">
+              ${c.cow ? `🐄 بقر: ${c.cow} ج` : 'بقر: بدون سعر محدد'}
+              ${c.buffOn ? ` · 🐃 جاموس: ${c.buff || 'بدون سعر'}` : ''}
+            </div>
+          </div>
+          <div class="cust-actions" onclick="event.stopPropagation()">
+            <button class="action-btn wa" title="واتساب" onclick="shareCustomerWhatsApp('${c.id}')">💬</button>
+            <button class="action-btn edit" title="تعديل" onclick="openEditModal('${c.id}')">✏️</button>
+            <button class="action-btn del" title="حذف" onclick="confirmDeleteCustomer('${c.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function handleSearchCusts(q) {
+  S.searchQueryCusts = q;
+  renderCustomersView(document.getElementById('mainContainer'));
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -1838,35 +1637,34 @@ function renderHistoryView(container) {
   const closedWeeks = S.history.filter(w => w.closed);
 
   container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h2 style="font-size: 16px; font-weight: 800; color: var(--navy);">📊 السجل التاريخي للأسابيع الماضية</h2>
-      <span style="font-size: 12px; color: var(--muted);">${closedWeeks.length} أسبوع مؤرشف</span>
-    </div>
+    <h2 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 10px;">
+      📊 السجل التاريخي للأسابيع الماضية
+    </h2>
 
     ${closedWeeks.length === 0 ? `
-      <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <div class="empty-text">لا توجد أسابيع سابقة مؤرشفة بعد</div>
-        <div class="empty-sub">عند إغلاق الأسبوع الحالي بعد تسليم الفلوس سيظهر تلقائياً هنا</div>
+      <div style="text-align: center; padding: 40px; color: var(--muted);">
+        <div style="font-size: 36px; margin-bottom: 8px;">📭</div>
+        <div>لا توجد أسابيع مؤرشفة بعد</div>
+        <div style="font-size: 12px; margin-top: 4px;">عند تصفية الأسبوع كل يوم أربعاء سيتم حفظه هنا</div>
       </div>
     ` : closedWeeks.map(w => {
       const custs = w.snapshot || S.customers;
-      let totalMoney = 0;
-      custs.forEach(c => { totalMoney += calcCustomerWeek(c, w).total; });
+      let tot = 0;
+      custs.forEach(c => { tot += calcCustomerWeek(c, w).total; });
       return `
-        <div class="card" style="cursor: pointer;" onclick="openWeekDetail('${w.ws}')">
+        <div class="card" style="cursor: pointer;" onclick="loadHistoricalWeek('${w.ws}')">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <div style="font-size: 14px; font-weight: 800; color: var(--navy);">
-                📅 دورة أسبوع: ${getWeekLabel(w.ws)}
+                📅 دورة أسبوع: ${getCycleLabel(w.ws)}
               </div>
-              <div style="font-size: 11px; color: var(--muted); margin-top: 3px;">
-                عدد الموردين: ${custs.length} · تاريخ الأرشفة: ${w.closedAt ? new Date(w.closedAt).toLocaleDateString('ar-EG') : 'ـ'}
+              <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                تاريخ الصرف: ${w.closedAt ? new Date(w.closedAt).toLocaleDateString('ar-EG') : 'ـ'}
               </div>
             </div>
             <div style="text-align: left;">
-              <div style="font-size: 16px; font-weight: 900; color: var(--green);">${totalMoney.toLocaleString('ar-EG')} ج.م</div>
-              <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-top: 2px;">عرض التفاصيل ◀</div>
+              <div style="font-size: 16px; font-weight: 900; color: var(--green);">${tot.toLocaleString('ar-EG')} ج.م</div>
+              <div style="font-size: 11px; color: var(--blue); font-weight: 700;">فتح الأسبوع ◀</div>
             </div>
           </div>
         </div>
@@ -1875,61 +1673,64 @@ function renderHistoryView(container) {
   `;
 }
 
+async function loadHistoricalWeek(ws) {
+  const w = await dbGet('weeks', ws);
+  if (w) {
+    S.week = w;
+    S.currentWs = ws;
+    S.date = ws;
+    goView('reports');
+    showToast(`تم فتح بيانات أسبوع ${getCycleLabel(ws)}`, 'ok');
+  }
+}
+
 // ══════════════════════════════════════════════════════════════════════════
-//  SETTINGS & DATA MANAGEMENT VIEW
+//  SETTINGS VIEW
 // ══════════════════════════════════════════════════════════════════════════
 function renderSettingsView(container) {
   container.innerHTML = `
     <div class="card">
-      <div class="card-title">⚙️ الإعدادات وإدارة النظام</div>
-      <div style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">
-        نظام متجر أبو يوسف للألبان — النسخة المتطورة الشاملة
+      <div class="card-title">⚙️ الإعدادات وإدارة البيانات</div>
+      <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+        نظام متجر أبو يوسف للألبان
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button class="btn btn-outline" onclick="openModal('backup')">
-          <span>💾</span> تصدير نسخة احتياطية من كل البيانات (JSON)
+          <span>💾</span> حفظ نسخة احتياطية من كل البيانات (JSON)
         </button>
         <button class="btn btn-outline" onclick="triggerRestoreInput()">
-          <span>📥</span> استعادة نسخة احتياطية من ملف
+          <span>📥</span> استرجاع بيانات سابقة من ملف
         </button>
-        <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
-
-        <button class="btn btn-outline" onclick="openModal('bulkPrice')">
-          <span>💲</span> تحديث أسعار اللبن لجميع العملاء دفعة واحدة
-        </button>
-        <button class="btn btn-outline" onclick="openBulkAddModal()">
-          <span>👥</span> إضافة عملاء متعددين دفعة واحدة
-        </button>
+        <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">ℹ️ معلومات دورة الحساب الأسبوعي</div>
+      <div class="card-title">ℹ️ نظام العمل الأسبوعي</div>
       <div style="font-size: 12px; color: var(--ink-secondary); line-height: 1.7;">
-        • يبدأ الأسبوع كل يوم <strong>أربعاء</strong> وينتهي يوم <strong>الأربعاء</strong> التالي.<br>
-        • يوم الأربعاء هو يوم تسليم الفلوس لجميع العملاء وتصفية الحسابات.<br>
-        • خانات اللبن تظهر فارغة افتراضياً لسهولة وسرعة الإدخال على الهواتف.<br>
-        • أزرار الكسور بالعربي (+ ربع، + نص، + تلات أرباع، + كيلو) لتسهيل العمل.<br>
-        • التطبيق يعمل بدون إنترنت تماماً (Offline PWA) على الهاتف أو الكمبيوتر.
+        • <strong>التوريد اليومي:</strong> يتم تسجيل كميات اللبن التي يجلبها الزباين كل يوم من <strong>الخميس</strong> وحتى <strong>الأربعاء</strong>.<br>
+        • <strong>يوم القبض (الأربعاء):</strong> يتم حساب مستحقات كل زبون لوحده وحساب كل الزباين معاً وصرف الفلوس وتصفية الأسبوع.<br>
+        • <strong>إدخال سهل وسريع:</strong> خانات الإدخال فارغة تماماً بدون أصفار، وأزرار الكسور بالعربي (+ ربع، + نص، + تلات أرباع، + كيلو).<br>
+        • <strong>إضافة بالجملة:</strong> إضافة أسماء الزباين تحت بعض دفعة واحدة بدون شروط.
       </div>
     </div>
   `;
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  MODALS (BULK ADD, SINGLE ADD/EDIT, BULK PRICE, BACKUP)
+//  MODALS (BULK ADD WITHOUT FIXED PRICE, SINGLE ADD/EDIT, BACKUP)
 // ══════════════════════════════════════════════════════════════════════════
 function renderModalHTML() {
   if (!S.modal && !S.confirm) return '';
 
   if (S.confirm) {
     return `
-      <div class="modal-overlay">
-        <div class="modal-sheet" style="border-radius: 20px; max-width: 400px; margin: auto; text-align: center;">
-          <div style="font-size: 32px; margin-bottom: 8px;">${S.confirm.icon || '⚠️'}</div>
-          <div style="font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px;">${S.confirm.title}</div>
-          <div style="font-size: 13px; color: var(--ink-secondary); line-height: 1.5; margin-bottom: 16px;">${S.confirm.msg}</div>
+      <div class="modal-bg">
+        <div class="modal-box" style="border-radius: 16px; max-width: 380px; margin: auto; text-align: center;">
+          <div style="font-size: 32px; margin-bottom: 6px;">${S.confirm.icon || '⚠️'}</div>
+          <div style="font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 4px;">${S.confirm.title}</div>
+          <div style="font-size: 13px; color: var(--ink-secondary); margin-bottom: 14px; line-height: 1.5;">${S.confirm.msg}</div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-outline" onclick="closeConfirm()">إلغاء</button>
             <button class="btn ${S.confirm.btnClass || 'btn-danger'}" onclick="${S.confirm.fn}">تأكيد</button>
@@ -1940,161 +1741,96 @@ function renderModalHTML() {
   }
 
   return `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-sheet">
-        ${renderModalBodyHTML()}
+    <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box">
+        ${renderModalBody()}
       </div>
     </div>
   `;
 }
 
-function renderModalBodyHTML() {
+function renderModalBody() {
   switch (S.modal) {
+    case 'bulkAdd':
+      // CRITICAL:
+      // "وقايمه الاضافه العملاء دفعه واحده مش شرط يبقا ليهم سعر محدد"
+      return `
+        <div class="modal-head">
+          <div class="modal-title">👥 إضافة زباين دفعة واحدة (تحت بعض)</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">
+          اكتب أسماء الزباين تحت بعض (سطر لكل زبون)، وسيتم حفظ كل زبون لوحده بشكل مستقل:
+        </div>
+
+        <textarea 
+          class="bulk-area" 
+          id="bulkNamesBox" 
+          placeholder="محمد أحمد&#10;الحاج رجب&#10;سيد إبراهيم&#10;علي محمود&#10;محمود عبد الله"
+        ></textarea>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin: 10px 0;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 4px;">
+            أسعار اللبن (اختياري - مش شرط تحط سعر دلوقتي):
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+              <label class="form-lbl">سعر البقر (ج.م)</label>
+              <input class="form-ctl" id="bulkCowPrice" type="number" step="0.5" placeholder="اختياري (مثال: 15)">
+            </div>
+            <div style="flex: 1;">
+              <label class="form-lbl">سعر الجاموس (ج.م)</label>
+              <input class="form-ctl" id="bulkBufPrice" type="number" step="0.5" placeholder="اختياري (مثال: 25)">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-success" onclick="executeBulkAdd()">
+          ✅ إضافة جميع الزباين الآن
+        </button>
+      `;
+
     case 'add':
     case 'edit':
       const isEdit = S.modal === 'edit';
       const cust = isEdit ? S.customers.find(c => c.id === S.editId) : null;
-      const fName = cust ? cust.name : '';
-      const fCow = cust ? cust.cow : (S.bulkDefaultCow || 15);
-      const fBufOn = cust ? cust.buffOn : false;
-      const fBuf = cust ? cust.buff : (S.bulkDefaultBuf || 25);
-
       return `
-        <div class="modal-header">
-          <div class="modal-title">${isEdit ? '✏️ تعديل بيانات العميل' : '➕ إضافة عميل جديد'}</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
+        <div class="modal-head">
+          <div class="modal-title">${isEdit ? '✏️ تعديل بيانات الزبون' : '➕ إضافة زبون جديد'}</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">اسم العميل (المورد)</label>
-          <input class="form-input" id="inpCustName" type="text" placeholder="مثال: محمد السيد" value="${fName}">
+        <div class="form-grp">
+          <label class="form-lbl">اسم الزبون</label>
+          <input class="form-ctl" id="custName" type="text" placeholder="أدخل اسم الزبون" value="${cust ? cust.name : ''}">
         </div>
-        <div class="form-group">
-          <label class="form-label">سعر لبن البقر (ج.م / كجم)</label>
-          <input class="form-input" id="inpCustCow" type="number" step="0.5" placeholder="مثال: 15" value="${fCow}">
+        <div class="form-grp">
+          <label class="form-lbl">سعر لبن البقر (ج.م / كجم) - اختياري</label>
+          <input class="form-ctl" id="custCow" type="number" step="0.5" placeholder="مثال: 15" value="${cust && cust.cow ? cust.cow : ''}">
         </div>
-        <div class="form-toggle" onclick="toggleFormBuff()">
-          <button type="button" class="switch ${fBufOn ? 'on' : ''}" id="btnFormBuff"></button>
-          <span style="font-size: 13px; font-weight: 700;">🐃 يجلب لبن جاموس أيضاً</span>
+        <div class="form-grp">
+          <label class="form-lbl">سعر لبن الجاموس (ج.م / كجم) - اختياري</label>
+          <input class="form-ctl" id="custBuf" type="number" step="0.5" placeholder="مثال: 25" value="${cust && cust.buff ? cust.buff : ''}">
         </div>
-        <div class="form-group" id="grpCustBuf" style="${fBufOn ? '' : 'display:none;'}">
-          <label class="form-label">سعر لبن الجاموس (ج.م / كجم)</label>
-          <input class="form-input" id="inpCustBuf" type="number" step="0.5" placeholder="مثال: 25" value="${fBuf}">
-        </div>
-        <button class="btn btn-primary" onclick="saveCustomerForm()" style="margin-top: 10px;">
-          ${isEdit ? '💾 حفظ التعديلات' : '✅ إضافة العميل'}
-        </button>
-      `;
-
-    case 'bulkAdd':
-      // CRITICAL REQUIREMENT:
-      // "وضيف ميزه اني اضيف عملاء كتيره مره واحده يعني يبقو تحت بعض وكل عميل يتضاف لوحده"
-      return `
-        <div class="modal-header">
-          <div class="modal-title">👥 إضافة عملاء متعددين دفعة واحدة</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-
-        <div class="tabs-header">
-          <button class="tab-btn ${S.bulkMode === 'names' ? 'active' : ''}" onclick="setBulkMode('names')">
-            📝 قائمة أسماء (سطر لكل عميل)
-          </button>
-          <button class="tab-btn ${S.bulkMode === 'rows' ? 'active' : ''}" onclick="setBulkMode('rows')">
-            📋 أسطر تفصيلية بالأسعار
-          </button>
-        </div>
-
-        ${S.bulkMode === 'names' ? `
-          <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">
-            اكتب أسماء العملاء تحت بعض (سطر لكل عميل) وسيتم إنشاء كل عميل بشكل مستقل:
-          </div>
-          <textarea 
-            class="bulk-textarea" 
-            id="bulkNamesInput" 
-            placeholder="أحمد إبراهيم&#10;محمد السيد&#10;الحاج رجب&#10;محمود علي"
-          >${S.bulkNamesText}</textarea>
-
-          <div style="background: #f8fafc; border-radius: 10px; padding: 12px; margin: 10px 0; border: 1px solid var(--border);">
-            <div style="font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 8px;">
-              الأسعار الافتراضية لهؤلاء العملاء:
-            </div>
-            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
-              <div style="flex: 1;">
-                <label class="form-label">سعر البقر (ج.م)</label>
-                <input class="form-input" id="bulkDefCow" type="number" step="0.5" value="${S.bulkDefaultCow}">
-              </div>
-              <div style="flex: 1;">
-                <label class="form-label">سعر الجاموس (ج.م)</label>
-                <input class="form-input" id="bulkDefBuf" type="number" step="0.5" value="${S.bulkDefaultBuf}">
-              </div>
-            </div>
-            <div class="form-toggle" onclick="toggleBulkDefBuff()">
-              <button type="button" class="switch ${S.bulkDefaultBufOn ? 'on' : ''}" id="btnBulkDefBuff"></button>
-              <span style="font-size: 12px; font-weight: 700;">تفعيل لبن الجاموس لهم جميعاً</span>
-            </div>
-          </div>
-
-          <button class="btn btn-success" onclick="processBulkNamesAdd()">
-            ✅ إضافة جميع هؤلاء العملاء الآن
-          </button>
-        ` : `
-          <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">
-            املأ بيانات كل عميل في سطر مستقل:
-          </div>
-          <div id="bulkRowsContainer" style="max-height: 40vh; overflow-y: auto; padding-left: 2px;">
-            ${(S.bulkRows.length ? S.bulkRows : initBulkRows()).map((r, i) => `
-              <div class="bulk-row-item" id="bulk-r-${i}">
-                <input class="form-input" style="flex: 2;" placeholder="اسم العميل ${i+1}" id="br-name-${i}" value="${r.name}">
-                <input class="form-input" style="flex: 1;" type="number" placeholder="بقر" id="br-cow-${i}" value="${r.cow}">
-                <input class="form-input" style="flex: 1;" type="number" placeholder="جاموس" id="br-buf-${i}" value="${r.buf}">
-                <button class="icon-btn delete" style="width: 32px; height: 32px;" onclick="removeBulkRow(${i})">✕</button>
-              </div>
-            `).join('')}
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="addBulkRow()" style="margin: 8px 0;">
-            + إضافة سطر لعميل إضافي
-          </button>
-          <button class="btn btn-success" onclick="processBulkRowsAdd()">
-            ✅ حفظ وإضافة العملاء
-          </button>
-        `}
-      `;
-
-    case 'bulkPrice':
-      return `
-        <div class="modal-header">
-          <div class="modal-title">💲 تعديل أسعار اللبن لجميع العملاء</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-        <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;">
-          يمكنك تغيير سعر لبن البقر أو الجاموس وتطبيقه على جميع العملاء المسجلين دفعة واحدة:
-        </div>
-        <div class="form-group">
-          <label class="form-label">السعر الجديد للبن البقر (ج.م / كجم)</label>
-          <input class="form-input" id="newGlobalCowPrice" type="number" step="0.5" placeholder="مثال: 16">
-        </div>
-        <div class="form-group">
-          <label class="form-label">السعر الجديد للبن الجاموس (ج.م / كجم) - اختياري</label>
-          <input class="form-input" id="newGlobalBufPrice" type="number" step="0.5" placeholder="مثال: 27">
-        </div>
-        <button class="btn btn-primary" onclick="applyBulkPriceUpdate()">
-          تطبيق الأسعار الجديدة على الجميع
+        <button class="btn btn-primary" onclick="saveSingleCustomer()" style="margin-top: 8px;">
+          ${isEdit ? '💾 حفظ التعديلات' : '✅ حفظ الزبون'}
         </button>
       `;
 
     case 'backup':
       return `
-        <div class="modal-header">
+        <div class="modal-head">
           <div class="modal-title">💾 النسخ الاحتياطي للبيانات</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
+          <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
-        <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 14px; line-height: 1.6;">
-          احفظ نسخة من بياناتك لضمان عدم ضياعها ونقلها لأي جهاز آخر بسهولة:
+        <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.5;">
+          يمكنك تحميل نسخة احتياطية من كل الزباين والأسابيع لتأمينها أو نقلها لموبايل آخر:
         </div>
-        <button class="btn btn-success" onclick="downloadBackupJSON()" style="margin-bottom: 8px;">
+        <button class="btn btn-success" onclick="downloadBackup()" style="margin-bottom: 8px;">
           ⬇️ تحميل ملف النسخة الاحتياطية (JSON)
         </button>
         <button class="btn btn-outline" onclick="triggerRestoreInput()">
-          ⬆️ استرجاع البيانات من ملف سابق
+          ⬆️ استرجاع نسخة احتياطية من ملف
         </button>
       `;
 
@@ -2103,137 +1839,46 @@ function renderModalBodyHTML() {
   }
 }
 
-function closeModal() {
-  S.modal = null;
-  S.editId = null;
-  render();
-}
-
-function openModal(type) {
-  S.modal = type;
-  render();
-}
-
-function closeConfirm() {
-  S.confirm = null;
-  render();
-}
+function openModal(m) { S.modal = m; render(); }
+function closeModal() { S.modal = null; S.editId = null; render(); }
+function closeConfirm() { S.confirm = null; render(); }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  BULK CUSTOMERS LOGIC (الأسماء تحت بعض وكل عميل يتضاف لوحده)
+//  BULK ADD IMPLEMENTATION
 // ══════════════════════════════════════════════════════════════════════════
-function openBulkAddModal() {
-  S.modal = 'bulkAdd';
-  S.bulkMode = 'names';
-  if (!S.bulkRows || !S.bulkRows.length) initBulkRows();
-  render();
-}
+async function executeBulkAdd() {
+  const box = document.getElementById('bulkNamesBox');
+  const cowEl = document.getElementById('bulkCowPrice');
+  const bufEl = document.getElementById('bulkBufPrice');
 
-function setBulkMode(mode) {
-  S.bulkMode = mode;
-  render();
-}
+  const text = box ? box.value : '';
+  const cowPrice = cowEl && cowEl.value ? parseFloat(cowEl.value) : 0;
+  const bufPrice = bufEl && bufEl.value ? parseFloat(bufEl.value) : 0;
 
-function toggleBulkDefBuff() {
-  S.bulkDefaultBufOn = !S.bulkDefaultBufOn;
-  const btn = document.getElementById('btnBulkDefBuff');
-  if (btn) btn.className = `switch ${S.bulkDefaultBufOn ? 'on' : ''}`;
-}
+  const names = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-function initBulkRows() {
-  S.bulkRows = [
-    { name: '', cow: S.bulkDefaultCow || 15, buf: S.bulkDefaultBuf || 25 },
-    { name: '', cow: S.bulkDefaultCow || 15, buf: S.bulkDefaultBuf || 25 },
-    { name: '', cow: S.bulkDefaultCow || 15, buf: S.bulkDefaultBuf || 25 }
-  ];
-  return S.bulkRows;
-}
-
-function addBulkRow() {
-  collectCurrentBulkRows();
-  S.bulkRows.push({ name: '', cow: S.bulkDefaultCow || 15, buf: S.bulkDefaultBuf || 25 });
-  render();
-}
-
-function removeBulkRow(idx) {
-  collectCurrentBulkRows();
-  S.bulkRows.splice(idx, 1);
-  if (S.bulkRows.length === 0) S.bulkRows.push({ name: '', cow: 15, buf: 25 });
-  render();
-}
-
-function collectCurrentBulkRows() {
-  S.bulkRows.forEach((r, i) => {
-    const nEl = document.getElementById(`br-name-${i}`);
-    const cEl = document.getElementById(`br-cow-${i}`);
-    const bEl = document.getElementById(`br-buf-${i}`);
-    if (nEl) r.name = nEl.value;
-    if (cEl) r.cow = parseFloat(cEl.value) || 0;
-    if (bEl) r.buf = parseFloat(bEl.value) || 0;
-  });
-}
-
-async function processBulkNamesAdd() {
-  const txtEl = document.getElementById('bulkNamesInput');
-  const cowEl = document.getElementById('bulkDefCow');
-  const bufEl = document.getElementById('bulkDefBuf');
-
-  const text = txtEl ? txtEl.value : '';
-  const defCow = cowEl ? parseFloat(cowEl.value) || 15 : 15;
-  const defBuf = bufEl ? parseFloat(bufEl.value) || 25 : 25;
-  const buffOn = S.bulkDefaultBufOn;
-
-  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  if (lines.length === 0) {
-    showToast('⚠️ يرجى كتابة اسم عميل واحد على الأقل', 'warn');
+  if (names.length === 0) {
+    showToast('⚠️ يرجى كتابة اسم زبون واحد على الأقل', 'warn');
     return;
   }
 
-  let addedCount = 0;
-  for (const name of lines) {
-    // Avoid exact duplicate names
-    const exists = S.customers.some(c => c.name.toLowerCase() === name.toLowerCase());
-    const newCust = {
-      id: uid(),
-      name: name,
-      cow: defCow,
-      buffOn: buffOn,
-      buff: buffOn ? defBuf : 0,
-      addedAt: getTodayStr()
-    };
-    S.customers.push(newCust);
-    addedCount++;
-  }
-
-  S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-  await saveCustomers();
-  closeModal();
-  showToast(`✅ تمت إضافة ${addedCount} عميل بنجاح وكل عميل مسجل بمفرده!`, 'ok');
-}
-
-async function processBulkRowsAdd() {
-  collectCurrentBulkRows();
-  const valid = S.bulkRows.filter(r => r.name.trim().length > 0);
-  if (valid.length === 0) {
-    showToast('⚠️ يرجى كتابة اسم عميل واحد على الأقل', 'warn');
-    return;
-  }
-
-  valid.forEach(r => {
+  let count = 0;
+  for (const name of names) {
     S.customers.push({
       id: uid(),
-      name: r.name.trim(),
-      cow: r.cow > 0 ? r.cow : 15,
-      buffOn: r.buf > 0,
-      buff: r.buf > 0 ? r.buf : 0,
+      name: name,
+      cow: cowPrice > 0 ? cowPrice : 0,
+      buffOn: bufPrice > 0,
+      buff: bufPrice > 0 ? bufPrice : 0,
       addedAt: getTodayStr()
     });
-  });
+    count++;
+  }
 
   S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
   await saveCustomers();
   closeModal();
-  showToast(`✅ تمت إضافة ${valid.length} عميل بنجاح`, 'ok');
+  showToast(`✅ تمت إضافة ${count} زبون بنجاح وكل زبون مسجل لوحده!`, 'ok');
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -2245,69 +1890,42 @@ function openEditModal(id) {
   render();
 }
 
-function toggleFormBuff() {
-  const grp = document.getElementById('grpCustBuf');
-  const btn = document.getElementById('btnFormBuff');
-  const isOn = btn.classList.contains('on');
-  if (isOn) {
-    btn.classList.remove('on');
-    grp.style.display = 'none';
-  } else {
-    btn.classList.add('on');
-    grp.style.display = 'block';
-  }
-}
-
-async function saveCustomerForm() {
-  const nameEl = document.getElementById('inpCustName');
-  const cowEl = document.getElementById('inpCustCow');
-  const bufEl = document.getElementById('inpCustBuf');
-  const btnBuff = document.getElementById('btnFormBuff');
+async function saveSingleCustomer() {
+  const nameEl = document.getElementById('custName');
+  const cowEl = document.getElementById('custCow');
+  const bufEl = document.getElementById('custBuf');
 
   const name = nameEl ? nameEl.value.trim() : '';
-  const cow = cowEl ? parseFloat(cowEl.value) : 0;
-  const buffOn = btnBuff ? btnBuff.classList.contains('on') : false;
-  const buff = bufEl ? parseFloat(bufEl.value) : 0;
+  const cow = cowEl && cowEl.value ? parseFloat(cowEl.value) : 0;
+  const buf = bufEl && bufEl.value ? parseFloat(bufEl.value) : 0;
 
   if (!name) {
-    showToast('❌ أدخل اسم العميل', 'err');
-    return;
-  }
-  if (!cow || cow <= 0) {
-    showToast('❌ أدخل سعر لبن البقر', 'err');
-    return;
-  }
-  if (buffOn && (!buff || buff <= 0)) {
-    showToast('❌ أدخل سعر لبن الجاموس', 'err');
+    showToast('❌ أدخل اسم الزبون', 'err');
     return;
   }
 
   if (S.modal === 'edit' && S.editId) {
     const idx = S.customers.findIndex(c => c.id === S.editId);
     if (idx !== -1) {
-      S.customers[idx] = {
-        ...S.customers[idx],
-        name,
-        cow,
-        buffOn,
-        buff: buffOn ? buff : 0
-      };
+      S.customers[idx].name = name;
+      S.customers[idx].cow = cow;
+      S.customers[idx].buffOn = buf > 0;
+      S.customers[idx].buff = buf;
       await saveCustomers();
-      showToast('✅ تم تعديل بيانات العميل بنجاح', 'ok');
+      showToast('✅ تم تعديل بيانات الزبون', 'ok');
     }
   } else {
-    const newCust = {
+    S.customers.push({
       id: uid(),
       name,
       cow,
-      buffOn,
-      buff: buffOn ? buff : 0,
+      buffOn: buf > 0,
+      buff,
       addedAt: getTodayStr()
-    };
-    S.customers.push(newCust);
+    });
     S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
     await saveCustomers();
-    showToast('✅ تمت إضافة العميل الجديد بنجاح', 'ok');
+    showToast('✅ تمت إضافة الزبون بنجاح', 'ok');
   }
 
   closeModal();
@@ -2317,10 +1935,9 @@ function confirmDeleteCustomer(id) {
   const c = S.customers.find(x => x.id === id);
   if (!c) return;
   S.confirm = {
-    title: 'حذف العميل',
-    msg: `هل أنت متأكد من حذف العميل "${c.name}" نهائياً من النظام؟`,
+    title: 'حذف الزبون',
+    msg: `هل تريد حذف "${c.name}" نهائياً من السيستم؟`,
     icon: '🗑️',
-    btnClass: 'btn-danger',
     fn: `executeDeleteCustomer('${id}')`
   };
   render();
@@ -2331,38 +1948,18 @@ async function executeDeleteCustomer(id) {
   S.customers = S.customers.filter(c => c.id !== id);
   await saveCustomers();
   closeConfirm();
-  showToast('🗑️ تم حذف العميل نهائياً', 'ok');
-}
-
-async function applyBulkPriceUpdate() {
-  const cowEl = document.getElementById('newGlobalCowPrice');
-  const bufEl = document.getElementById('newGlobalBufPrice');
-  const newCow = cowEl ? parseFloat(cowEl.value) : 0;
-  const newBuf = bufEl ? parseFloat(bufEl.value) : 0;
-
-  if (!newCow && !newBuf) {
-    showToast('⚠️ أدخل سعراً واحداً على الأقل للتحديث', 'warn');
-    return;
-  }
-
-  S.customers.forEach(c => {
-    if (newCow > 0) c.cow = newCow;
-    if (newBuf > 0 && c.buffOn) c.buff = newBuf;
-  });
-
-  await saveCustomers();
-  closeModal();
-  showToast('✅ تم تحديث الأسعار لجميع العملاء بنجاح', 'ok');
+  showToast('🗑️ تم حذف الزبون', 'ok');
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  CYCLE CLOSE & NEW WEEK INITIALIZATION
+//  WEEK CLOSE & NAVIGATION
 // ══════════════════════════════════════════════════════════════════════════
 function confirmCloseWeek() {
   const w = S.week;
+  const days = getCycleDays(w.ws);
   S.confirm = {
-    title: '🔄 إغلاق أسبوع ' + getWeekLabel(w.ws),
-    msg: 'سيتم أرشفة هذا الأسبوع كاملاً في السجل التاريخي، وتصفير كميات اللبن لبدء أسبوع جديد ابتداءً من يوم الأربعاء القادم. هل تم تسليم جميع العملاء فلوسهم؟',
+    title: '🔄 تصفية وإغلاق حساب الأسبوع',
+    msg: `هل قمت بتسليم كل الزباين فلوسهم يوم الأربعاء (${formatDateAr(days[6])}) وتريد أرشفة الأسبوع وبدء أسبوع جديد من الخميس؟`,
     icon: '💰',
     btnClass: 'btn-success',
     fn: 'executeCloseWeek()'
@@ -2381,10 +1978,13 @@ async function executeCloseWeek() {
 
   await dbPut('weeks', archived);
 
-  // New week starts exactly next Wednesday!
-  const nextWed = getNextWednesday(curWeek.ws);
+  // New week starts Thursday (7 days after old start Thursday)
+  const nextThursdayObj = new Date(curWeek.ws + 'T00:00:00');
+  nextThursdayObj.setDate(nextThursdayObj.getDate() + 7);
+  const nextWs = nextThursdayObj.toISOString().split('T')[0];
+
   const newWeek = {
-    ws: nextWed,
+    ws: nextWs,
     entries: {},
     paid: {},
     closed: false
@@ -2392,202 +1992,98 @@ async function executeCloseWeek() {
 
   await dbPut('weeks', newWeek);
   S.week = newWeek;
+  S.currentWs = nextWs;
+  S.date = nextWs;
   S.history = await dbGetAll('weeks');
   S.history.sort((a, b) => b.ws.localeCompare(a.ws));
-  S.date = nextWed;
 
   closeConfirm();
-  showToast('🎉 تم إغلاق الأسبوع بنجاح وبدء دورة أسبوع جديد!', 'ok');
+  showToast('🎉 تم إغلاق الأسبوع بنجاح وبدء دورة الأسبوع الجديد (من الخميس)!', 'ok');
   goView('home');
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CUSTOMER DETAIL VIEW & HISTORY
-// ══════════════════════════════════════════════════════════════════════════
-function openCustomerDetail(id) {
-  S.cDetailId = id;
-  goView('cDetail');
-}
+async function navWeek(delta) {
+  const d = new Date(S.currentWs + 'T00:00:00');
+  d.setDate(d.getDate() + (delta * 7));
+  const newWs = d.toISOString().split('T')[0];
+  S.currentWs = newWs;
 
-function renderCustomerDetailView(container) {
-  const c = S.customers.find(x => x.id === S.cDetailId);
-  if (!c) { goView('customers'); return; }
-
-  const w = S.week;
-  const days = getWeekDays(w.ws);
-  const res = calcCustomerWeek(c, w);
-
-  container.innerHTML = `
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-      <h2 style="font-size: 16px; font-weight: 800; color: var(--navy);">👤 كشف حساب: ${c.name}</h2>
-      <button class="btn btn-sm btn-outline" onclick="goView('customers')">◀ رجوع للعملاء</button>
-    </div>
-
-    <!-- SUMMARY CARD -->
-    <div class="card">
-      <div class="card-title">💰 إجمالي مستحقات الأسبوع الحالي</div>
-      <div class="stats-grid" style="margin-bottom: 8px;">
-        <div class="stat-card">
-          <div class="stat-value">${res.totalKg.toFixed(1)} <small style="font-size:12px">كجم</small></div>
-          <div class="stat-label">لبن بقر: ${res.cowKg.toFixed(1)} | جاموس: ${res.bufKg.toFixed(1)}</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-value">${res.total.toFixed(2)} <small style="font-size:12px">ج.م</small></div>
-          <div class="stat-label">المبلغ المستحق له يوم الأربعاء</div>
-        </div>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-success btn-sm" onclick="shareCustomerWhatsApp('${c.id}')" style="flex: 1;">💬 إرسال فاتورة واتساب</button>
-        <button class="btn btn-primary btn-sm" onclick="openEditModal('${c.id}')" style="flex: 1;">✏️ تعديل بياناته</button>
-      </div>
-    </div>
-
-    <!-- DAILY BREAKDOWN -->
-    <div class="card">
-      <div class="card-title">📅 توريدات الأيام (دورة الأسبوع)</div>
-      ${days.map(d => {
-        const e = (w.entries[c.id] || {})[d] || {};
-        const cow = e.cow || 0;
-        const buf = c.buffOn ? (e.buf || 0) : 0;
-        const totKg = cow + buf;
-        const isTod = d === getTodayStr();
-        return `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); ${isTod ? 'background: #eff6ff; padding: 10px 8px; border-radius: 8px;' : ''}">
-            <div>
-              <div style="font-weight: 800; font-size: 13px;">${formatDateFullAr(d)} ${isTod ? '📍' : ''}</div>
-              ${totKg > 0 ? `
-                <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
-                  🐄 بقر: ${cow > 0 ? formatKgArabic(cow) : 'ـ'} 
-                  ${c.buffOn && buf > 0 ? ` · 🐃 جاموس: ${formatKgArabic(buf)}` : ''}
-                </div>
-              ` : ''}
-            </div>
-            <div style="font-weight: 800; color: ${totKg > 0 ? 'var(--green)' : 'var(--muted)'};">
-              ${totKg > 0 ? `${totKg.toFixed(2)} كجم` : 'لم يورد'}
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-}
-
-function openWeekDetail(ws) {
-  S.wDetail = S.history.find(w => w.ws === ws);
-  if (S.wDetail) goView('wDetail');
-}
-
-function renderWeekDetailView(container) {
-  const w = S.wDetail;
-  if (!w) { goView('history'); return; }
-  const days = getWeekDays(w.ws);
-  const custs = w.snapshot || S.customers;
-
-  let grand = 0;
-  const rows = custs.map(c => {
-    const res = calcCustomerWeek(c, w);
-    grand += res.total;
-    return { c, ...res };
-  });
-
-  container.innerHTML = `
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-      <h2 style="font-size: 15px; font-weight: 800; color: var(--navy);">📊 أرشيف أسبوع: ${getWeekLabel(w.ws)}</h2>
-      <button class="btn btn-sm btn-outline" onclick="goView('history')">◀ رجوع</button>
-    </div>
-
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="font-weight: 800;">إجمالي الفلوس المسلمة:</span>
-        <span style="font-size: 18px; font-weight: 900; color: var(--green);">${grand.toLocaleString('ar-EG')} ج.م</span>
-      </div>
-      <div class="table-wrap">
-        <table class="app-table">
-          <thead>
-            <tr>
-              <th style="text-align: right; padding-right: 8px;">العميل</th>
-              ${days.map(d => `<th>${formatDateAr(d).split(' ')[0]}<br>${getDayNameAr(d).slice(0,3)}</th>`).join('')}
-              <th>كجم</th>
-              <th>المبلغ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td style="text-align: right; font-weight: 700; padding-right: 8px;">${r.c.name}</td>
-                ${days.map(d => {
-                  const e = (w.entries[r.c.id] || {})[d] || {};
-                  const t = (e.cow || 0) + (e.buf || 0);
-                  return `<td>${t > 0 ? t : 'ـ'}</td>`;
-                }).join('')}
-                <td>${r.totalKg.toFixed(1)}</td>
-                <td style="color: var(--green); font-weight: 800;">${r.total.toFixed(0)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
+  let w = await dbGet('weeks', newWs);
+  if (!w) {
+    w = { ws: newWs, entries: {}, paid: {}, closed: false };
+    await dbPut('weeks', w);
+  }
+  S.week = w;
+  S.date = newWs;
+  render();
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  WHATSAPP SHARING & EXPORT
+//  WHATSAPP SHARING
 // ══════════════════════════════════════════════════════════════════════════
 function shareCustomerWhatsApp(cId) {
   const cust = S.customers.find(c => c.id === cId);
   if (!cust) return;
   const w = S.week;
+  const days = getCycleDays(w.ws);
   const res = calcCustomerWeek(cust, w);
-  const cycleLabel = getWeekLabel(w.ws);
+
+  // Daily entries breakdown for WhatsApp
+  let daysText = '';
+  days.forEach((d, idx) => {
+    const e = (w.entries[cust.id] || {})[d] || {};
+    const cow = e.cow || 0;
+    const buf = cust.buffOn ? (e.buf || 0) : 0;
+    const tot = cow + buf;
+    if (tot > 0) {
+      daysText += `• ${DAY_NAMES[idx]}: ${formatKgArabic(tot)}\n`;
+    }
+  });
 
   const msg = 
 `السلام عليكم يا ${cust.name} 🥛
 كشف حساب توريد اللبن من *متجر أبو يوسف للألبان*
-📅 دورة أسبوع: ${cycleLabel}
+📅 الأسبوع: ${getCycleLabel(w.ws)}
 -----------------------------
-🐄 لبن بقر: ${res.cowKg.toFixed(2)} كجم (${cust.cow} ج/كجم) = ${res.cowAmt.toFixed(2)} ج.م
-${cust.buffOn && res.bufKg > 0 ? `🐃 لبن جاموس: ${res.bufKg.toFixed(2)} كجم (${cust.buff} ج/كجم) = ${res.bufAmt.toFixed(2)} ج.م\n` : ''}-----------------------------
-💰 *إجمالي المبلغ المستحق لك: ${res.total.toFixed(2)} ج.م*
-تاريخ الصرف: كل يوم أربعاء
-شكراً لتعاملكم الراقي معنا! 🙏`;
+تفاصيل توريدك بالأيام:
+${daysText || '• لم تسجل كميات\n'}-----------------------------
+🐄 إجمالي لبن بقر: ${res.cowKg.toFixed(2)} كجم (${cust.cow || 0} ج) = ${res.cowAmt.toFixed(2)} ج.م
+${cust.buffOn && res.bufKg > 0 ? `🐃 إجمالي لبن جاموس: ${res.bufKg.toFixed(2)} كجم (${cust.buff || 0} ج) = ${res.bufAmt.toFixed(2)} ج.م\n` : ''}-----------------------------
+💰 *إجمالي المبلغ المستحق لك يوم الأربعاء: ${res.total.toFixed(2)} ج.م*
+شكراً لتعاملكم الطيب معنا! 🙏`;
 
-  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function shareGeneralWhatsApp() {
   const w = S.week;
-  let total = 0;
-  let totalKg = 0;
+  let totMoney = 0;
+  let totKg = 0;
   S.customers.forEach(c => {
     const r = calcCustomerWeek(c, w);
-    total += r.total;
-    totalKg += r.totalKg;
+    totMoney += r.total;
+    totKg += r.totalKg;
   });
 
   const msg = 
-`📊 *ملخص حسابات متجر أبو يوسف للألبان*
-📅 دورة أسبوع: ${getWeekLabel(w.ws)}
+`📊 *كشف حساب أسبوع: متجر أبو يوسف للألبان*
+📅 ${getCycleLabel(w.ws)}
 -----------------------------
-👥 عدد الموردين: ${S.customers.length} عميل
-🥛 إجمالي كمية اللبن: ${totalKg.toFixed(2)} كجم
-💰 إجمالي مستحقات الأسبوع للتسليم: ${total.toLocaleString('ar-EG')} ج.م
+👥 عدد الزباين: ${S.customers.length}
+🥛 إجمالي كمية اللبن: ${totKg.toFixed(2)} كجم
+💰 إجمالي فلوس الأسبوع لتسليم الأربعاء: ${totMoney.toLocaleString('ar-EG')} ج.م
 -----------------------------
-تم إصدار التقرير بتاريخ: ${formatDateFullAr(getTodayStr())}`;
+تاريخ التقرير: ${getDayNameAr(getTodayStr())} ${formatDateAr(getTodayStr())}`;
 
-  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function exportWeekCSV() {
   const w = S.week;
-  const days = getWeekDays(w.ws);
+  const days = getCycleDays(w.ws);
   const rows = [];
 
-  // Header row
-  const header = ['العميل', ...days.map(d => `${formatDateAr(d)} (${getDayNameAr(d)})`), 'إجمالي الكيلو', 'المبلغ ج.م'];
-  rows.push(header.join(','));
+  rows.push(['الزبون', ...days.map(d => `${getDayNameAr(d)} (${formatDateAr(d)})`), 'إجمالي الكيلو', 'المبلغ ج.م'].join(','));
 
   S.customers.forEach(c => {
     const res = calcCustomerWeek(c, w);
@@ -2595,88 +2091,75 @@ function exportWeekCSV() {
       const e = (w.entries[c.id] || {})[d] || {};
       return (e.cow || 0) + (e.buf || 0);
     });
-    const row = [
-      `"${c.name}"`,
-      ...dayCols,
-      res.totalKg.toFixed(2),
-      res.total.toFixed(2)
-    ];
-    rows.push(row.join(','));
+    rows.push([`"${c.name}"`, ...dayCols, res.totalKg.toFixed(2), res.total.toFixed(2)].join(','));
   });
 
-  const csvContent = '\uFEFF' + rows.join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
+  const csv = '\uFEFF' + rows.join('\n');
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `كشف-حساب-أسبوع-${w.ws}.csv`;
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = `حساب-أسبوع-${w.ws}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  showToast('✅ تم تنزيل ملف Excel / CSV بنجاح', 'ok');
+  showToast('✅ تم تنزيل ملف Excel بنجاح', 'ok');
 }
 
 // ══════════════════════════════════════════════════════════════════════════
 //  BACKUP & RESTORE
 // ══════════════════════════════════════════════════════════════════════════
-async function downloadBackupJSON() {
-  const backup = {
-    version: '3.0',
-    exportedAt: new Date().toISOString(),
+async function downloadBackup() {
+  const data = {
+    version: '4.0',
+    cycle: 'ThursdayToWednesday',
     customers: S.customers,
     week: S.week,
     history: S.history
   };
-
-  const str = JSON.stringify(backup, null, 2);
-  const blob = new Blob([str], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `نسخة-احتياطية-أبو-يوسف-${getTodayStr()}.json`;
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  a.download = `نسخة-أبو-يوسف-${getTodayStr()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  showToast('💾 تم حفظ ملف النسخة الاحتياطية بنجاح', 'ok');
+  showToast('💾 تم تنزيل النسخة الاحتياطية', 'ok');
 }
 
 function triggerRestoreInput() {
-  const inp = document.getElementById('restoreFileInput');
-  if (inp) inp.click();
+  const f = document.getElementById('restoreFile');
+  if (f) f.click();
 }
 
 function handleRestoreFile(input) {
   const file = input.files[0];
   if (!file) return;
-
   const reader = new FileReader();
-  reader.onload = async (e) => {
+  reader.onload = async e => {
     try {
-      const data = JSON.parse(e.target.result);
-      if (data.customers && Array.isArray(data.customers)) {
-        for (const c of data.customers) await dbPut('customers', c);
-        S.customers = data.customers;
+      const d = JSON.parse(e.target.result);
+      if (d.customers) {
+        for (const c of d.customers) await dbPut('customers', c);
+        S.customers = d.customers;
       }
-      if (data.week && data.week.ws) {
-        await dbPut('weeks', data.week);
-        S.week = data.week;
+      if (d.week) {
+        await dbPut('weeks', d.week);
+        S.week = d.week;
       }
-      if (data.history && Array.isArray(data.history)) {
-        for (const w of data.history) await dbPut('weeks', w);
+      if (d.history) {
+        for (const h of d.history) await dbPut('weeks', h);
       }
       await loadData();
       closeModal();
-      showToast('✅ تم استرجاع جميع البيانات بنجاح', 'ok');
+      showToast('✅ تم استرجاع البيانات بنجاح', 'ok');
       render();
     } catch (err) {
-      showToast('❌ ملف غير صالح أو تالف', 'err');
+      showToast('❌ ملف غير صالح', 'err');
     }
   };
   reader.readAsText(file);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  NAVIGATION & TOAST
+//  HELPERS & INIT
 // ══════════════════════════════════════════════════════════════════════════
 function goView(v) {
   S.view = v;
@@ -2684,77 +2167,39 @@ function goView(v) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-let _toastTimer;
+let _tTimer;
 function showToast(msg, type = '') {
   const el = document.getElementById('toast');
   if (!el) return;
   el.textContent = msg;
-  el.className = `toast-box show ${type}`;
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => {
-    el.classList.remove('show');
-  }, 3200);
+  el.className = `toast-msg show ${type}`;
+  clearTimeout(_tTimer);
+  _tTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  APP INITIALIZATION & SERVICE WORKER
-// ══════════════════════════════════════════════════════════════════════════
-async function startApp() {
+// PWA Offline Service Worker
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const C='aby-dairy-v4';
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch', e => {
+      if(e.request.method!=='GET') return;
+      e.respondWith(caches.open(C).then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok)c.put(e.request,res.clone());return res;}).catch(()=>r))));
+    });
+  `;
+  try {
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], { type: 'text/javascript' }))).catch(()=>{});
+  } catch(e){}
+}
+
+async function start() {
   await initDB();
   await loadData();
   render();
 }
 
-// Dynamic PWA Manifest
-(() => {
-  const manifest = {
-    name: 'متجر أبو يوسف للألبان',
-    short_name: 'أبو يوسف',
-    description: 'تطبيق إدارة وتوريد الألبان والحسابات الأسبوعية',
-    start_url: '.',
-    display: 'standalone',
-    background_color: '#0b1e38',
-    theme_color: '#0b1e38',
-    lang: 'ar',
-    dir: 'rtl',
-    icons: [{
-      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥛%3C/text%3E%3C/svg%3E",
-      sizes: 'any',
-      type: 'image/svg+xml'
-    }]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-  const link = document.createElement('link');
-  link.rel = 'manifest';
-  link.href = URL.createObjectURL(blob);
-  document.head.appendChild(link);
-})();
-
-// Offline ServiceWorker
-if ('serviceWorker' in navigator) {
-  const swCode = `
-    const CACHE_NAME = 'aby-dairy-v3';
-    self.addEventListener('install', e => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => {
-      if (e.request.method !== 'GET') return;
-      e.respondWith(
-        caches.open(CACHE_NAME).then(cache => 
-          cache.match(e.request).then(res => res || fetch(e.request).then(netRes => {
-            if (netRes.ok) cache.put(e.request, netRes.clone());
-            return netRes;
-          }).catch(() => res))
-        )
-      );
-    });
-  `;
-  try {
-    const swBlob = new Blob([swCode], { type: 'text/javascript' });
-    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-  } catch (e) {}
-}
-
-startApp();
+start();
 </script>
 </body>
 </html>
