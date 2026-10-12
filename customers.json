@@ -1,0 +1,21 @@
+{
+  "customers": [
+    {
+      "id": "mv568zswmnn1cg6y1q",
+      "name": "6tru8e",
+      "cow": 7,
+      "buffOn": false,
+      "buff": 0,
+      "addedAt": "2026-10-12"
+    },
+    {
+      "id": "mv567vdint1mkzfse3h",
+      "name": "uiltu",
+      "cow": 11,
+      "buffOn": true,
+      "buff": 55,
+      "addedAt": "2026-10-12"
+    }
+  ],
+  "savedAt": "2026-10-12T11:31:30.769Z"
+}

@@ -1,0 +1,43 @@
+{
+  "ws": "2026-10-06",
+  "entries": {
+    "mv568zswmnn1cg6y1q": {
+      "2026-10-05": {
+        "cow": 5.5
+      },
+      "2026-10-11": {
+        "cow": 5.5
+      }
+    },
+    "mv567vdint1mkzfse3h": {
+      "2026-10-05": {
+        "cow": 0,
+        "buf": 0
+      },
+      "2026-10-11": {
+        "cow": 10.25,
+        "buf": 1.5
+      }
+    }
+  },
+  "closed": true,
+  "closedAt": "2026-10-12T11:38:26.364Z",
+  "snapshot": [
+    {
+      "id": "mv568zswmnn1cg6y1q",
+      "name": "6tru8e",
+      "cow": 7,
+      "buffOn": false,
+      "buff": 0,
+      "addedAt": "2026-10-12"
+    },
+    {
+      "id": "mv567vdint1mkzfse3h",
+      "name": "uiltu",
+      "cow": 11,
+      "buffOn": true,
+      "buff": 55,
+      "addedAt": "2026-10-12"
+    }
+  ]
+}
