@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0f2952">
+<title>أبو يوسف للألبان</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#0f2952;--blue:#1d4ed8;--sky:#3b82f6;
+  --green:#059669;--gl:#d1fae5;
+  --amber:#d97706;--al:#fef3c7;
+  --red:#dc2626;
+  --bg:#f0f4fb;--card:#fff;
+  --ink:#0f172a;--muted:#64748b;--border:#dde3ef;
+  --r:14px;--sh:0 2px 16px rgba(15,41,82,.09)
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);direction:rtl;overflow-x:hidden}
+#app{min-height:100vh;display:flex;flex-direction:column}
+
+/* ─── HEADER ─── */
+.H{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;padding:14px 18px;position:sticky;top:0;z-index:50;box-shadow:0 3px 12px rgba(15,41,82,.35)}
+.Hr{display:flex;align-items:center;justify-content:space-between}
+.Ht{font-size:17px;font-weight:800;letter-spacing:.2px}
+.Hs{font-size:11px;opacity:.75;margin-top:2px}
+.Hb{background:rgba(255,255,255,.15);border:none;color:#fff;padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px)}
+
+/* ─── LAYOUT ─── */
+.main{flex:1;padding:14px;padding-bottom:82px;overflow-y:auto}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid var(--border);box-shadow:0 -3px 16px rgba(0,0,0,.07);z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 4px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:10px;gap:3px;transition:color .2s}
+.ni .ico{font-size:20px}
+.ni.a{color:var(--blue)}
+
+/* ─── CARDS ─── */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:15px;margin-bottom:12px}
+.ct{font-size:14px;font-weight:800;margin-bottom:13px;color:var(--navy);display:flex;align-items:center;gap:7px}
+
+/* ─── STATS ─── */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{background:var(--card);border-radius:var(--r);padding:13px;box-shadow:var(--sh);text-align:center}
+.sv{font-size:22px;font-weight:900;color:var(--blue)}
+.sl{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ─── BUTTONS ─── */
+.btn{padding:12px 18px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%}
+.btn+.btn{margin-top:8px}
+.btn:active{opacity:.84;transform:scale(.99)}
+.bp{background:var(--blue);color:#fff}
+.bs{background:var(--green);color:#fff}
+.bd{background:var(--red);color:#fff}
+.bo{background:transparent;border:2px solid var(--blue);color:var(--blue)}
+.bw{background:var(--amber);color:#fff}
+
+/* ─── FORM ─── */
+.fg{margin-bottom:13px}
+.fl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block}
+.fi{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:10px;font-size:14px;color:var(--ink);background:#fff;direction:rtl;transition:border-color .2s}
+.fi:focus{outline:none;border-color:var(--blue)}
+.ftog{display:flex;align-items:center;gap:10px;padding:11px 0}
+.tgl{width:46px;height:26px;background:var(--border);border-radius:13px;position:relative;cursor:pointer;border:none;flex-shrink:0;transition:background .3s}
+.tgl.on{background:var(--green)}
+.tgl::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;right:3px;transition:transform .3s;box-shadow:0 1px 5px rgba(0,0,0,.22)}
+.tgl.on::after{transform:translateX(-20px)}
+
+/* ─── CUSTOMER LIST ─── */
+.ci{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff;border-radius:var(--r);margin-bottom:9px;box-shadow:var(--sh);cursor:pointer}
+.cn{font-size:14px;font-weight:800}
+.cp{font-size:11px;color:var(--muted);margin-top:3px}
+.cac{display:flex;gap:6px}
+.ib{padding:7px;border-radius:8px;border:none;cursor:pointer;font-size:16px;background:transparent;line-height:1}
+
+/* ─── DAILY CARD ─── */
+.dcc{background:#fff;border-radius:var(--r);padding:13px;margin-bottom:9px;box-shadow:var(--sh)}
+.dch{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dcn{font-size:14px;font-weight:800}
+.dct{font-size:12px;color:var(--green);font-weight:700;transition:all .15s}
+.mir{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.mtl{font-size:12px;font-weight:700;color:var(--muted);min-width:50px;flex-shrink:0}
+.mi{flex:1;padding:9px;border:2px solid var(--border);border-radius:8px;font-size:15px;text-align:center;direction:ltr;transition:border-color .2s}
+.mi:focus{outline:none;border-color:var(--blue)}
+.fbs{display:flex;gap:6px;margin-top:6px;margin-right:57px;flex-wrap:wrap}
+.fb{padding:6px 10px;border-radius:8px;border:2px solid var(--sky);background:#fff;color:var(--blue);font-size:13px;font-weight:800;cursor:pointer;min-width:42px;text-align:center;transition:all .12s}
+.fb:active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ─── TABLE ─── */
+.wtbl{width:100%;border-collapse:collapse;font-size:11px}
+.wtbl th{background:var(--navy);color:#fff;padding:8px 5px;text-align:center;white-space:nowrap;font-size:10px;font-weight:700}
+.wtbl td{padding:7px 5px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;font-size:11px}
+.wtbl .ttr td{font-weight:800;color:var(--green);background:var(--gl)!important}
+.wtbl tr:nth-child(even) td{background:#f8fafc}
+.wtd{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+
+/* ─── SETUP ─── */
+.ss{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;background:linear-gradient(160deg,var(--navy) 0%,#1e40af 60%,#2563eb 100%);text-align:center}
+.slogo{font-size:64px;margin-bottom:18px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.3))}
+.stit{color:#fff;font-size:26px;font-weight:900;margin-bottom:7px;letter-spacing:-.3px}
+.ssub{color:rgba(255,255,255,.75);font-size:13px;margin-bottom:34px;line-height:1.7}
+.scard{background:#fff;border-radius:20px;padding:26px 22px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.sctt{font-size:17px;font-weight:800;margin-bottom:7px;color:var(--navy)}
+.scs{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.65}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:90px;left:14px;right:14px;background:var(--ink);color:#fff;padding:13px 16px;border-radius:11px;font-size:13px;text-align:center;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.28);transform:translateY(14px);opacity:0;transition:all .25s;pointer-events:none}
+.toast.show{transform:none;opacity:1}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+
+/* ─── MODAL ─── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.mod{background:#fff;border-radius:20px 20px 0 0;padding:22px 18px 28px;width:100%;max-height:88vh;overflow-y:auto}
+.mdt{font-size:17px;font-weight:800;margin-bottom:18px;color:var(--navy)}
+
+/* ─── DATE CHIPS ─── */
+.dsel{display:flex;overflow-x:auto;gap:7px;padding-bottom:3px;margin-bottom:14px;scrollbar-width:none}
+.dsel::-webkit-scrollbar{display:none}
+.dc{flex-shrink:0;padding:7px 12px;border-radius:18px;border:2px solid var(--border);background:#fff;font-size:11px;font-weight:700;cursor:pointer;text-align:center;min-width:44px}
+.dc.a{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ─── HISTORY ─── */
+.hi{background:#fff;border-radius:var(--r);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.hid{font-size:14px;font-weight:800}
+.hit{font-size:14px;color:var(--green);font-weight:800}
+
+/* ─── MISC ─── */
+.es{text-align:center;padding:40px 16px;color:var(--muted)}
+.ei{font-size:48px;margin-bottom:12px}
+.cdlg{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:150;display:flex;align-items:center;justify-content:center;padding:18px}
+.cbox{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:300px;text-align:center}
+.cbt{font-size:16px;font-weight:800;margin-bottom:7px}
+.cbm{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.55}
+.cbns{display:flex;gap:8px}
+.cbns .btn{flex:1;padding:10px}
+.price-tag{font-size:11px;color:var(--muted);white-space:nowrap}
+.week-warn{background:var(--al);border:2px solid var(--amber);border-radius:var(--r);padding:14px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+<script>
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+let S={
+  view:'loading',customers:[],week:null,
+  history:[],folder:null,date:td(),
+  editId:null,modal:false,
+  form:{name:'',cow:'',buffOn:false,buff:''},
+  confirm:null,wDetail:null,cDetailId:null
+};
+
+// ════════════════════════════════════
+//  INDEXED DB
+// ════════════════════════════════════
+let _db;
+function idb(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open('AbyDairy',2);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      ['meta','customers','weeks'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,s==='meta'?{}:{keyPath:s==='customers'?'id':'ws'})});
+    };
+    r.onsuccess=e=>{_db=e.target.result;res()};r.onerror=rej;
+  });
+}
+function tx(s,m){return _db.transaction(s,m).objectStore(s)}
+function dbG(s,k){return new Promise((r,j)=>{const q=tx(s,'readonly').get(k);q.onsuccess=()=>r(q.result);q.onerror=j})}
+function dbP(s,v,k){return new Promise((r,j)=>{const q=k!==undefined?tx(s,'readwrite').put(v,k):tx(s,'readwrite').put(v);q.onsuccess=()=>r();q.onerror=j})}
+function dbD(s,k){return new Promise((r,j)=>{const q=tx(s,'readwrite').delete(k);q.onsuccess=()=>r();q.onerror=j})}
+function dbA(s){return new Promise((r,j)=>{const q=tx(s,'readonly').getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=j})}
+
+// ════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function td(){return new Date().toISOString().split('T')[0]}
+const DN=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MN=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function fd(s){const d=new Date(s+'T00:00:00');return`${d.getDate()} ${MN[d.getMonth()]}`}
+function fdf(s){const d=new Date(s+'T00:00:00');return`${DN[d.getDay()]} ${fd(s)}`}
+function wStart(date){
+  const d=new Date(date+'T00:00:00'),day=d.getDay(),diff=(day-3+7)%7;
+  const w=new Date(d);w.setDate(d.getDate()-diff);return w.toISOString().split('T')[0];
+}
+function wDays(ws){
+  const days=[],s=new Date(ws+'T00:00:00');
+  for(let i=0;i<7;i++){const d=new Date(s);d.setDate(s.getDate()+i);days.push(d.toISOString().split('T')[0]);}
+  return days;
+}
+function wLbl(ws){const d=wDays(ws);return`${fd(d[0])} — ${fd(d[6])}`}
+function dayName(s){return DN[new Date(s+'T00:00:00').getDay()]}
+function calcC(c,w){
+  const wd=wDays(w.ws),ent=w.entries||{};
+  let cow=0,buf=0;
+  for(const d of wd){const e=(ent[c.id]||{})[d]||{};cow+=e.cow||0;if(c.buffOn)buf+=e.buf||0;}
+  return{cow,buf,cowAmt:cow*(c.cow||0),bufAmt:buf*(c.buff||0),total:cow*(c.cow||0)+buf*(c.buff||0)};
+}
+
+// ════════════════════════════════════
+//  FILE SYSTEM
+// ════════════════════════════════════
+async function pickFolder(){
+  try{const h=await window.showDirectoryPicker({mode:'readwrite'});S.folder=h;await dbP('meta',h,'folder');return true}catch(e){return false}
+}
+async function loadFolder(){
+  try{
+    const h=await dbG('meta','folder');if(!h)return false;
+    const p=await h.queryPermission({mode:'readwrite'});
+    if(p==='granted'){S.folder=h;return true}
+    const np=await h.requestPermission({mode:'readwrite'});
+    if(np==='granted'){S.folder=h;return true}
+  }catch(e){}
+  return false;
+}
+async function wFile(name,content){
+  if(!S.folder)return;
+  try{
+    const p=await S.folder.queryPermission({mode:'readwrite'});
+    if(p!=='granted'){const np=await S.folder.requestPermission({mode:'readwrite'});if(np!=='granted')return}
+    const fh=await S.folder.getFileHandle(name,{create:true});
+    const wr=await fh.createWritable();await wr.write(content);await wr.close();
+  }catch(e){}
+}
+
+// ════════════════════════════════════
+//  DATA OPS
+// ════════════════════════════════════
+async function loadData(){
+  S.customers=await dbA('customers');
+  S.customers.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const ws=wStart(td());
+  let w=await dbG('weeks',ws);
+  if(!w)w={ws,entries:{},closed:false};
+  S.week=w;
+  S.history=await dbA('weeks');
+  S.history.sort((a,b)=>b.ws.localeCompare(a.ws));
+}
+async function saveCusts(){
+  for(const c of S.customers)await dbP('customers',c);
+  await wFile('customers.json',JSON.stringify({customers:S.customers,savedAt:new Date().toISOString()},null,2));
+}
+async function saveWeek(w){
+  await dbP('weeks',w);
+  await wFile(`week-${w.ws}.json`,JSON.stringify(w,null,2));
+}
+async function saveReport(w){
+  const custs=w.snapshot||S.customers,wd=wDays(w.ws);let grand=0;
+  const rows=custs.map(c=>{const r=calcC(c,w);grand+=r.total;return{c,...r}});
+  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير أسبوع ${wLbl(w.ws)}</title>
+<style>body{font-family:Arial;direction:rtl;padding:24px;color:#0f172a;max-width:900px;margin:auto}
+h1{color:#0f2952;font-size:22px}h2{color:#1d4ed8;font-size:16px;margin:6px 0 4px}p{color:#64748b;font-size:12px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;margin-bottom:24px}
+th{background:#0f2952;color:#fff;padding:10px 8px;font-size:12px;text-align:center}
+td{padding:9px 8px;border:1px solid #dde3ef;text-align:center;font-size:12px}
+.tot{font-weight:800;color:#059669;background:#d1fae5}
+.grand{font-size:16px;font-weight:900;color:#059669}
+</style></head><body>
+<h1>🥛 متجر أبو يوسف للألبان</h1>
+<h2>تقرير أسبوع: ${wLbl(w.ws)}</h2>
+<p>📅 تاريخ الإصدار: ${new Date().toLocaleDateString('ar-EG')} &nbsp;|&nbsp; عدد العملاء: ${custs.length}</p>
+<table><thead><tr><th>العميل</th>${wd.map(d=>`<th>${fd(d)}<br><span style="font-size:10px">${dayName(d)}</span></th>`).join('')}<th>الكيلو</th><th>المبلغ ج.م</th></tr></thead>
+<tbody>
+${rows.map(({c,cow,buf,total})=>`<tr><td style="text-align:right;font-weight:700">${c.name}</td>${wd.map(d=>{const e=(w.entries[c.id]||{})[d]||{};const t=(e.cow||0)+(e.buf||0);return`<td>${t>0?t:'-'}</td>`}).join('')}<td>${(cow+buf).toFixed(2)}</td><td class="tot">${total.toFixed(2)}</td></tr>`).join('')}
+<tr><td colspan="${wd.length+2}"><strong>الإجمالي الكلي للأسبوع</strong></td><td class="grand">${grand.toFixed(2)} ج.م</td></tr>
+</tbody></table></body></html>`;
+  await wFile(`report-${w.ws}.html`,html);
+}
+
+// ════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════
+function render(){
+  const app=document.getElementById('app');
+  if(S.view==='loading'){app.innerHTML=`<div class="ss"><div class="slogo">🥛</div><div class="stit">جارٍ التحميل…</div></div>`;return}
+  if(S.view==='setup'){rSetup(app);return}
+  app.innerHTML=`<div id="H"></div><div class="main" id="M"></div>
+<nav class="bnav">${['home','daily','customers','reports'].map((v,i)=>`
+<button class="ni${S.view===v?' a':''}" onclick="go('${v}')">
+<span class="ico">${['🏠','📝','👥','📊'][i]}</span>
+<span>${['الرئيسية','يومي','العملاء','تقرير'][i]}</span>
+</button>`).join('')}</nav>
+${S.modal?rModHTML():''}${S.confirm?rConfHTML():''}`;
+  const M=document.getElementById('M'),H=document.getElementById('H');
+  ({home:rHome,daily:rDaily,customers:rCusts,reports:rReports,history:rHist,wDetail:rWDetail,cDetail:rCDetail})[S.view]?.(M,H);
+}
+
+function hdr(t,s,b=''){
+  document.getElementById('H').innerHTML=`<div class="H"><div class="Hr"><div><div class="Ht">${t}</div><div class="Hs">${s}</div></div>${b?`<button class="Hb" onclick="${b.fn}">${b.lbl}</button>`:''}</div></div>`
+}
+
+function rSetup(app){
+  const hasFS='showDirectoryPicker' in window;
+  app.innerHTML=`<div class="ss">
+<div class="slogo">🥛</div>
+<div class="stit">متجر أبو يوسف للألبان</div>
+<div class="ssub">نظام إدارة معدلات الإنتاج اليومية<br>حسابات أسبوعية · عملاء · تقارير</div>
+<div class="scard">
+<div class="sctt">أهلاً وسهلاً 👋</div>
+<div class="scs">${hasFS?'اختر مجلداً لحفظ التقارير والبيانات على جهازك. يمكن التخطي والاعتماد على التخزين المحلي فقط.':'سيتم حفظ البيانات محلياً في الجهاز تلقائياً بدون الحاجة لإنترنت.'}</div>
+${hasFS?`<button class="btn bp" onclick="doPickFolder()" style="margin-bottom:9px">📁 اختيار مجلد للتخزين</button>
+<button class="btn bo" onclick="doSkip()">الاستمرار بالتخزين المحلي</button>`
+:`<button class="btn bp" onclick="doSkip()">ابدأ الاستخدام</button>`}
+</div></div>`;
+}
+
+function rHome(M,H){
+  const w=S.week,wd=wDays(w.ws),today=td();
+  let wTot=0,kgTot=0;
+  S.customers.forEach(c=>{const r=calcC(c,w);wTot+=r.total;kgTot+=r.cow+r.buf});
+  const todayN=S.customers.filter(c=>{const e=(w.entries[c.id]||{})[today]||{};return(e.cow||0)+(e.buf||0)>0}).length;
+  hdr('🥛 أبو يوسف للألبان',wLbl(w.ws),{lbl:'📋 السجل',fn:"go('history')"});
+  M.innerHTML=`<div class="sg">
+<div class="sc"><div class="sv">${S.customers.length}</div><div class="sl">العملاء</div></div>
+<div class="sc"><div class="sv">${todayN}</div><div class="sl">سُجِّلوا اليوم</div></div>
+<div class="sc"><div class="sv">${kgTot.toFixed(1)}</div><div class="sl">كيلو هذا الأسبوع</div></div>
+<div class="sc"><div class="sv" style="color:var(--green)">${wTot.toFixed(0)}</div><div class="sl">إجمالي الأسبوع ج.م</div></div>
+</div>
+<div class="card"><div class="ct">📅 جدول الأسبوع الحالي</div>
+<div class="wtd"><table class="wtbl">
+<thead><tr><th>العميل</th>${wd.map(d=>`<th>${fd(d).split(' ')[0]}<br>${dayName(d).slice(0,3)}</th>`).join('')}<th>ج.م</th></tr></thead>
+<tbody>${S.customers.map(c=>{const r=calcC(c,w);
+return`<tr><td style="text-align:right;font-weight:700;font-size:12px;padding-right:7px">${c.name}</td>${wd.map(d=>{const e=(w.entries[c.id]||{})[d]||{};const t=(e.cow||0)+(e.buf||0);return`<td${d===today?' style="background:#eff6ff;font-weight:700"':''}>${t>0?t:'-'}</td>`}).join('')}<td style="color:var(--green);font-weight:800">${r.total.toFixed(0)}</td></tr>`;
+}).join('')}
+<tr class="ttr"><td>الإجمالي</td>${wd.map(d=>{let dt=0;S.customers.forEach(c=>{const e=(w.entries[c.id]||{})[d]||{};dt+=(e.cow||0)+(e.buf||0)});return`<td>${dt||'-'}</td>`}).join('')}<td>${wTot.toFixed(2)}</td></tr>
+</tbody></table></div></div>
+<button class="btn bp" onclick="go('daily')">📝 تسجيل يوم ${fdf(today)}</button>`;
+}
+
+function rDaily(M,H){
+  const w=S.week,wd=wDays(w.ws);
+  if(!wd.includes(S.date))S.date=td();
+  hdr('📝 التسجيل اليومي',fdf(S.date));
+  if(!S.customers.length){M.innerHTML=`<div class="es"><div class="ei">👥</div><div>لم تُضف عملاء بعد<br><small>اذهب لتبويب العملاء</small></div></div>`;return}
+  M.innerHTML=`<div class="dsel">${wd.map(d=>`<div class="dc${d===S.date?' a':''}" onclick="selD('${d}')">
+<div>${dayName(d).slice(0,3)}</div><div style="font-size:13px">${new Date(d+'T00:00:00').getDate()}</div></div>`).join('')}</div>
+<div id="DC">${S.customers.map(c=>cCard(c,w)).join('')}</div>
+<button class="btn bs" onclick="saveDay()">✅ حفظ بيانات ${fd(S.date)}</button>`;
+  setTimeout(()=>{const a=document.querySelector('.dc.a');if(a)a.scrollIntoView({block:'nearest',inline:'center'})},50);
+}
+
+function cCard(c,w){
+  const e=(w.entries[c.id]||{})[S.date]||{};
+  const cv=e.cow!=null?e.cow:'',bv=e.buf!=null?e.buf:'';
+  const tot=(e.cow||0)*(c.cow||0)+(e.buf||0)*(c.buff||0);
+  return`<div class="dcc">
+<div class="dch"><div class="dcn">${c.name}</div><div class="dct" id="dt${c.id}">${tot>0?tot.toFixed(2)+' ج.م':''}</div></div>
+<div class="mir"><div class="mtl">🐄 بقر</div>
+<input class="mi" type="number" min="0" step="0.01" placeholder="0" value="${cv}" id="c${c.id}" oninput="rTot('${c.id}')">
+<span class="price-tag">${c.cow} ج/كجم</span></div>
+<div class="fbs">
+<button class="fb" onclick="af('c${c.id}','${c.id}',0.5)">½</button>
+<button class="fb" onclick="af('c${c.id}','${c.id}',0.25)">¼</button>
+<button class="fb" onclick="af('c${c.id}','${c.id}',0.75)">¾</button>
+<button class="fb" onclick="af('c${c.id}','${c.id}',${1/3})">⅓</button>
+</div>
+${c.buffOn?`<div class="mir" style="margin-top:8px"><div class="mtl">🐃 جاموس</div>
+<input class="mi" type="number" min="0" step="0.01" placeholder="0" value="${bv}" id="b${c.id}" oninput="rTot('${c.id}')">
+<span class="price-tag">${c.buff} ج/كجم</span></div>
+<div class="fbs">
+<button class="fb" onclick="af('b${c.id}','${c.id}',0.5)">½</button>
+<button class="fb" onclick="af('b${c.id}','${c.id}',0.25)">¼</button>
+<button class="fb" onclick="af('b${c.id}','${c.id}',0.75)">¾</button>
+<button class="fb" onclick="af('b${c.id}','${c.id}',${1/3})">⅓</button>
+</div>`:''}
+</div>`;
+}
+
+function rCusts(M,H){
+  hdr('👥 إدارة العملاء',`${S.customers.length} عميل مسجل`,{lbl:'+ إضافة',fn:'showAdd()'});
+  if(!S.customers.length){M.innerHTML=`<div class="es"><div class="ei">👤</div><div>لا يوجد عملاء بعد</div></div><button class="btn bp" onclick="showAdd()">+ إضافة أول عميل</button>`;return}
+  M.innerHTML=`${S.customers.map(c=>`<div class="ci" onclick="showCD('${c.id}')">
+<div><div class="cn">${c.name}</div>
+<div class="cp">🐄 ${c.cow} ج${c.buffOn?` | 🐃 ${c.buff} ج`:''}/كجم</div></div>
+<div class="cac" onclick="event.stopPropagation()">
+<button class="ib" style="color:var(--blue)" onclick="showEdit('${c.id}')">✏️</button>
+<button class="ib" style="color:var(--red)" onclick="delCust('${c.id}')">🗑️</button>
+</div></div>`).join('')}
+<button class="btn bp" onclick="showAdd()" style="margin-top:6px">+ إضافة عميل جديد</button>`;
+}
+
+function rModHTML(){
+  const f=S.form,e=!!S.editId;
+  return`<div class="ov" onclick="if(event.target===this)closeMod()">
+<div class="mod"><div class="mdt">${e?'✏️ تعديل بيانات العميل':'➕ إضافة عميل جديد'}</div>
+<div class="fg"><label class="fl">اسم العميل</label>
+<input class="fi" type="text" placeholder="أدخل اسم العميل" value="${f.name}" id="fn" oninput="ff('name',this.value)"></div>
+<div class="fg"><label class="fl">سعر لبن البقر (ج.م / كجم)</label>
+<input class="fi" type="number" min="0" step="0.5" placeholder="مثال: 15" value="${f.cow}" id="fc" oninput="ff('cow',this.value)"></div>
+<div class="ftog">
+<button class="tgl${f.buffOn?' on':''}" onclick="togBuf()"></button>
+<span style="font-size:13px;font-weight:700">🐃 يجلب لبن جاموس أيضاً</span></div>
+${f.buffOn?`<div class="fg"><label class="fl">سعر لبن الجاموس (ج.م / كجم)</label>
+<input class="fi" type="number" min="0" step="0.5" placeholder="مثال: 25" value="${f.buff}" id="fb" oninput="ff('buff',this.value)"></div>`:''}
+<button class="btn bs" onclick="saveCust()" style="margin-bottom:9px">${e?'💾 حفظ التعديلات':'✅ إضافة العميل'}</button>
+<button class="btn bo" onclick="closeMod()">إلغاء</button>
+</div></div>`;
+}
+
+function rReports(M,H){
+  const w=S.week;let grand=0;
+  const rows=S.customers.map(c=>{const r=calcC(c,w);grand+=r.total;return{c,...r}});
+  hdr('📊 تقرير الأسبوع',wLbl(w.ws));
+  M.innerHTML=`<div class="card"><div class="ct">💰 المبالغ المستحقة هذا الأسبوع</div>
+${rows.map(({c,cow,buf,cowAmt,bufAmt,total})=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+<div><div style="font-weight:800;font-size:14px">${c.name}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px">🐄 ${cow.toFixed(2)} كجم × ${c.cow} = ${cowAmt.toFixed(2)} ج${c.buffOn&&buf>0?`<br>🐃 ${buf.toFixed(2)} كجم × ${c.buff} = ${bufAmt.toFixed(2)} ج`:''}</div></div>
+<div style="font-size:18px;font-weight:900;color:var(--green)">${total.toFixed(2)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">ج.م</span></div>
+</div>`).join('')}
+<div style="display:flex;justify-content:space-between;padding:14px 0;margin-top:4px">
+<div style="font-weight:900;font-size:15px">الإجمالي الكلي</div>
+<div style="font-size:22px;font-weight:900;color:var(--green)">${grand.toFixed(2)} ج.م</div>
+</div></div>
+<div class="week-warn">
+<div style="font-weight:800;font-size:14px;color:var(--amber);margin-bottom:8px">⚠️ إغلاق الأسبوع وبدء أسبوع جديد</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">سيتم أرشفة الأسبوع الحالي وحفظ تقرير HTML، ثم بدء أسبوع جديد بنفس العملاء والأسعار مع تصفير كميات اللبن.</div>
+<button class="btn bw" onclick="confClose()">🔄 إغلاق الأسبوع وبدء جديد</button>
+</div>
+<button class="btn bo" onclick="go('history')">📋 السجل التاريخي</button>`;
+}
+
+function rHist(M,H){
+  hdr('📋 السجل التاريخي','الأسابيع المؤرشفة',{lbl:'◀ رجوع',fn:"go('reports')"});
+  const closed=S.history.filter(w=>w.closed);
+  if(!closed.length){M.innerHTML=`<div class="es"><div class="ei">📭</div><div>لا يوجد أسابيع مؤرشفة بعد</div></div>`;return}
+  M.innerHTML=closed.map(w=>{
+    const custs=w.snapshot||S.customers;let tot=0;
+    custs.forEach(c=>{tot+=calcC(c,w).total});
+    return`<div class="hi" onclick="showWD('${w.ws}')">
+<div><div class="hid">📅 ${wLbl(w.ws)}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px">${custs.length} عملاء · ${w.closedAt?new Date(w.closedAt).toLocaleDateString('ar-EG'):''}</div></div>
+<div class="hit">${tot.toFixed(2)} ج.م</div></div>`;
+  }).join('');
+}
+
+function rWDetail(M,H){
+  const w=S.wDetail;if(!w){go('history');return}
+  const custs=w.snapshot||S.customers,wd=wDays(w.ws);let grand=0;
+  const rows=custs.map(c=>{const r=calcC(c,w);grand+=r.total;return{c,...r}});
+  hdr('📊 تفاصيل الأسبوع',wLbl(w.ws),{lbl:'◀',fn:"go('history')"});
+  M.innerHTML=`<div class="card"><div class="ct">📅 جدول الأسبوع</div>
+<div class="wtd"><table class="wtbl">
+<thead><tr><th>العميل</th>${wd.map(d=>`<th>${fd(d).split(' ')[0]}<br>${dayName(d).slice(0,3)}</th>`).join('')}<th>ج.م</th></tr></thead>
+<tbody>${custs.map(c=>{const r=calcC(c,w);return`<tr><td style="text-align:right;font-weight:700;padding-right:7px">${c.name}</td>${wd.map(d=>{const e=(w.entries[c.id]||{})[d]||{};const t=(e.cow||0)+(e.buf||0);return`<td>${t||'-'}</td>`}).join('')}<td style="color:var(--green);font-weight:800">${r.total.toFixed(0)}</td></tr>`}).join('')}</tbody>
+</table></div></div>
+<div class="card"><div class="ct">💰 المبالغ</div>
+${rows.map(({c,total})=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+<span style="font-weight:700">${c.name}</span><span style="color:var(--green);font-weight:800">${total.toFixed(2)} ج.م</span></div>`).join('')}
+<div style="display:flex;justify-content:space-between;padding:12px 0">
+<span style="font-weight:900">الإجمالي</span>
+<span style="color:var(--green);font-weight:900;font-size:18px">${grand.toFixed(2)} ج.م</span></div></div>`;
+}
+
+function rCDetail(M,H){
+  const c=S.customers.find(x=>x.id===S.cDetailId);if(!c){go('customers');return}
+  const w=S.week,wd=wDays(w.ws),today=td();
+  const r=calcC(c,w);
+  hdr(`👤 ${c.name}`,'سجل الإنتاج الأسبوعي',{lbl:'◀',fn:"go('customers')"});
+  M.innerHTML=`<div class="card"><div class="ct">📋 الأسبوع الحالي — ${wLbl(w.ws)}</div>
+${wd.map(d=>{const e=(w.entries[c.id]||{})[d]||{};const cow=e.cow||0;const buf=c.buffOn?e.buf||0:0;const t=cow+buf;const isT=d===today;
+return`<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)${isT?';background:#eff6ff;margin:0 -15px;padding:11px 15px':''}">
+<div><div style="font-weight:${isT?800:500};font-size:13px">${fdf(d)}${isT?' 📍':''}</div>
+${t>0?`<div style="font-size:11px;color:var(--muted);margin-top:2px">🐄 ${cow} كجم${c.buffOn&&buf>0?` · 🐃 ${buf} كجم`:''}</div>`:''}</div>
+<div style="font-weight:800;color:${t>0?'var(--green)':'var(--muted)'}${isT?';font-size:16px':''}">
+${t>0?t+' كجم':'لم يسجل'}</div></div>`;
+}).join('')}
+<div style="display:flex;justify-content:space-between;padding:13px 0;margin-top:5px">
+<span style="font-weight:900">إجمالي الأسبوع</span>
+<span style="color:var(--green);font-weight:900;font-size:17px">${r.total.toFixed(2)} ج.م</span></div></div>
+<div class="card"><div class="ct">💰 بيانات التسعير</div>
+<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+<span>🐄 سعر البقر</span><span style="font-weight:800">${c.cow} ج.م / كجم</span></div>
+${c.buffOn?`<div style="display:flex;justify-content:space-between;padding:9px 0">
+<span>🐃 سعر الجاموس</span><span style="font-weight:800">${c.buff} ج.م / كجم</span></div>`:''}
+</div>
+<button class="btn bp" onclick="go('daily')">📝 تسجيل يومي</button>`;
+}
+
+function rConfHTML(){
+  const d=S.confirm;
+  return`<div class="cdlg"><div class="cbox">
+<div class="cbt">${d.title}</div><div class="cbm">${d.msg}</div>
+<div class="cbns">
+<button class="btn bo" onclick="S.confirm=null;render()">إلغاء</button>
+<button class="btn ${d.cls||'bd'}" onclick="${d.fn}">تأكيد</button>
+</div></div></div>`;
+}
+
+// ════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════
+function go(v){S.view=v;render()}
+function selD(d){S.date=d;rDaily(document.getElementById('M'),document.getElementById('H'));setTimeout(()=>{const a=document.querySelector('.dc.a');if(a)a.scrollIntoView({block:'nearest',inline:'center'})},30)}
+function ff(k,v){S.form[k]=v}
+
+function af(inpId,cId,frac){
+  const inp=document.getElementById(inpId);if(!inp)return;
+  const w=Math.floor((parseFloat(inp.value)||0)+0.001);
+  inp.value=parseFloat((w+frac).toFixed(4));rTot(cId);
+}
+
+function rTot(cId){
+  const c=S.customers.find(x=>x.id===cId);if(!c)return;
+  const ci=document.getElementById('c'+cId),bi=document.getElementById('b'+cId);
+  const cow=parseFloat(ci?.value)||0,buf=parseFloat(bi?.value)||0;
+  const tot=cow*(c.cow||0)+buf*(c.buff||0);
+  const el=document.getElementById('dt'+cId);
+  if(el)el.textContent=tot>0?tot.toFixed(2)+' ج.م':'';
+  if(!S.week.entries[cId])S.week.entries[cId]={};
+  if(!S.week.entries[cId][S.date])S.week.entries[cId][S.date]={};
+  S.week.entries[cId][S.date].cow=cow;
+  if(c.buffOn)S.week.entries[cId][S.date].buf=buf;
+}
+
+async function saveDay(){
+  S.customers.forEach(c=>{
+    const ci=document.getElementById('c'+c.id),bi=document.getElementById('b'+c.id);
+    if(!S.week.entries[c.id])S.week.entries[c.id]={};
+    if(!S.week.entries[c.id][S.date])S.week.entries[c.id][S.date]={};
+    if(ci)S.week.entries[c.id][S.date].cow=parseFloat(ci.value)||0;
+    if(bi&&c.buffOn)S.week.entries[c.id][S.date].buf=parseFloat(bi.value)||0;
+  });
+  await saveWeek(S.week);toast('✅ تم حفظ بيانات '+fd(S.date),'ok');
+}
+
+function showAdd(){
+  S.editId=null;S.form={name:'',cow:'',buffOn:false,buff:''};
+  S.modal=true;render();setTimeout(()=>document.getElementById('fn')?.focus(),100);
+}
+function showEdit(id){
+  const c=S.customers.find(x=>x.id===id);if(!c)return;
+  S.editId=id;S.form={name:c.name,cow:c.cow,buffOn:c.buffOn||false,buff:c.buff||''};
+  S.modal=true;render();
+}
+function closeMod(){S.modal=false;S.editId=null;render()}
+
+function togBuf(){
+  const fn=document.getElementById('fn'),fc=document.getElementById('fc'),fb=document.getElementById('fb');
+  if(fn)S.form.name=fn.value;if(fc)S.form.cow=fc.value;if(fb)S.form.buff=fb.value;
+  S.form.buffOn=!S.form.buffOn;render();
+}
+
+async function saveCust(){
+  const fn=document.getElementById('fn'),fc=document.getElementById('fc'),fb=document.getElementById('fb');
+  if(fn)S.form.name=fn.value;if(fc)S.form.cow=fc.value;if(fb)S.form.buff=fb.value;
+  const f=S.form;
+  if(!f.name.trim()){toast('❌ أدخل اسم العميل','err');return}
+  if(!f.cow||+f.cow<=0){toast('❌ أدخل سعر لبن البقر','err');return}
+  if(f.buffOn&&(!f.buff||+f.buff<=0)){toast('❌ أدخل سعر لبن الجاموس','err');return}
+  if(S.editId){
+    const i=S.customers.findIndex(c=>c.id===S.editId);
+    if(i!==-1)S.customers[i]={...S.customers[i],name:f.name.trim(),cow:+f.cow,buffOn:f.buffOn,buff:f.buffOn?+f.buff:0};
+    toast('✅ تم تعديل العميل','ok');
+  }else{
+    S.customers.push({id:uid(),name:f.name.trim(),cow:+f.cow,buffOn:f.buffOn,buff:f.buffOn?+f.buff:0,addedAt:td()});
+    S.customers.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+    toast('✅ تمت إضافة العميل','ok');
+  }
+  await saveCusts();S.modal=false;S.editId=null;render();
+}
+
+function delCust(id){
+  const c=S.customers.find(x=>x.id===id);if(!c)return;
+  S.confirm={title:'🗑️ حذف العميل',msg:`حذف "${c.name}" نهائياً؟`,cls:'bd',fn:`doDel('${id}')`};render();
+}
+async function doDel(id){
+  await dbD('customers',id);S.customers=S.customers.filter(c=>c.id!==id);
+  S.confirm=null;toast('🗑️ تم حذف العميل','ok');await saveCusts();render();
+}
+
+function confClose(){
+  S.confirm={title:'🔄 إغلاق الأسبوع',msg:`إغلاق أسبوع ${wLbl(S.week.ws)} وبدء أسبوع جديد؟ سيتم حفظ التقرير وتصفير الكميات.`,cls:'bw',fn:'doClose()'};render();
+}
+async function doClose(){
+  const closed={...S.week,closed:true,closedAt:new Date().toISOString(),snapshot:JSON.parse(JSON.stringify(S.customers))};
+  await saveWeek(closed);await saveReport(closed);
+  const ns=new Date(S.week.ws+'T00:00:00');ns.setDate(ns.getDate()+7);
+  S.week={ws:ns.toISOString().split('T')[0],entries:{},closed:false};
+  await saveWeek(S.week);
+  S.history=await dbA('weeks');S.history.sort((a,b)=>b.ws.localeCompare(a.ws));
+  S.confirm=null;toast('✅ تم إغلاق الأسبوع وبدء جديد','ok');go('home');
+}
+
+async function showWD(ws){const w=await dbG('weeks',ws);if(!w)return;S.wDetail=w;go('wDetail')}
+function showCD(id){S.cDetailId=id;go('cDetail')}
+
+async function doPickFolder(){
+  const ok=await pickFolder();
+  if(ok){await dbP('meta',true,'setup');await saveCusts();if(S.week)await saveWeek(S.week);toast('✅ تم اختيار المجلد','ok');S.view='home';render();}
+  else toast('❌ لم يتم الاختيار','err');
+}
+async function doSkip(){await dbP('meta',true,'setup');S.view='home';render()}
+
+// ─── TOAST ───
+let _tt;
+function toast(msg,type=''){
+  const el=document.getElementById('toast');if(!el)return;
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3200);
+}
+
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+async function init(){
+  await idb();await loadData();
+  const done=await dbG('meta','setup');
+  if(!done){S.view='setup';}
+  else{await loadFolder();S.view='home';}
+  render();
+}
+
+// PWA Manifest
+(()=>{
+  const m={name:'أبو يوسف للألبان',short_name:'أبو يوسف',start_url:'.',display:'standalone',background_color:'#0f2952',theme_color:'#0f2952',lang:'ar',dir:'rtl',
+  icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥛%3C/text%3E%3C/svg%3E",sizes:'any',type:'image/svg+xml'}]};
+  const b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);
+})();
+
+// Service Worker (offline support)
+if('serviceWorker' in navigator){
+  const sw=`const C='aby-v2';
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
+e.respondWith(caches.open(C).then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok)c.put(e.request,resp.clone());return resp}).catch(()=>r))));
+});`;
+  try{const b=new Blob([sw],{type:'text/javascript'});navigator.serviceWorker.register(URL.createObjectURL(b)).catch(()=>{})}catch(e){}
+}
+
+init();
+</script>
+</body>
+</html>
