@@ -479,14 +479,16 @@ html, body {
 
 /* ─── HALF PRICE QUICK BUTTON ─── */
 .half-btn {
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #bfdbfe;
-  background: #f0f7ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #bfdbfe;
+  background: #eff6ff;
   color: var(--blue);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
 }
 .half-btn:active { background: var(--blue); color: #fff; }
 
@@ -631,8 +633,48 @@ html, body {
 .bulk-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   margin-bottom: 8px;
+}
+
+/* ─── CALENDAR PICKER MODAL GRID ─── */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 10px 0;
+  text-align: center;
+}
+.cal-head {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  padding: 4px 0;
+}
+.cal-day-cell {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .12s;
+}
+.cal-day-cell:active { transform: scale(.95); }
+.cal-day-cell.today {
+  border-color: var(--blue);
+  color: var(--blue);
+  font-weight: 900;
+}
+.cal-day-cell.selected {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.cal-day-cell.payout {
+  background: #f0fdf4;
+  color: #059669;
 }
 
 /* ─── TOAST ─── */
@@ -676,75 +718,61 @@ html, body {
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-//  APP STATE
-// ══════════════════════════════════════════════════════════════════════════
-let S = {
-  view: 'home', // 'home' | 'daily' | 'reports' | 'customers' | 'history' | 'cDetail' | 'settings'
-  customers: [],
-  week: null,
-  history: [],
-  date: '2026-10-12', // default today (Monday 12 Oct 2026)
-  currentWs: '2026-10-08', // Thursday 8 Oct 2026
-  searchQueryDaily: '',
-  searchQueryReports: '',
-  searchQueryCusts: '',
-  modal: null, // 'add' | 'edit' | 'bulkAdd' | 'backup'
-  editId: null,
-  cDetailId: null,
-  confirm: null,
-  bulkRows: []
-};
-
-// ══════════════════════════════════════════════════════════════════════════
-//  ROBUST DATE & THURSDAY-TO-WEDNESDAY MATH (الخميس 8 أكتوبر إلى الأربعاء 14 أكتوبر)
+//  ROBUST DATE & CALENDAR SYSTEM (ZERO TIMEZONE OFFSET SHIFTS)
 // ══════════════════════════════════════════════════════════════════════════
 const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const AR_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
-// Today is 12 Oct 2026
-function getSystemTodayStr() {
-  // If system date is Oct 2026 use it, or fallback to 2026-10-12
-  const d = new Date();
-  if (d.getFullYear() === 2026) {
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-  return '2026-10-12';
+// Safe Date Formatting & Parsing (Never uses toISOString which subtracts hours in GMT+3)
+function formatYMD(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
-// Find Thursday (start of week) for any date:
-// Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
+function parseYMD(str) {
+  if (!str) return new Date();
+  const parts = String(str).split('-').map(Number);
+  // Noon (12:00:00) avoids any daylight-saving midnight boundary shifts!
+  return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
+}
+
+// Get the Thursday (start of week) for any date:
+// In JS: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
 function getWeekStartThursday(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
+  const d = parseYMD(dateStr);
   const day = d.getDay();
-  // Diff to go back to Thursday (4):
   const diff = (day - 4 + 7) % 7;
-  const thur = new Date(d);
-  thur.setDate(d.getDate() - diff);
-  return thur.toISOString().split('T')[0];
+  d.setDate(d.getDate() - diff);
+  return formatYMD(d);
 }
 
-// 7 days from Thursday to Wednesday:
-// Day 0: الخميس, Day 1: الجمعة, Day 2: السبت, Day 3: الأحد, Day 4: الاثنين, Day 5: الثلاثاء, Day 6: الأربعاء (يوم القبض)
+// 7 exact days of the collection week from Thursday to Wednesday
 function getCycleDays(ws) {
-  // Verify ws is actually a Thursday; if not, snap to Thursday
   const verifiedWs = getWeekStartThursday(ws);
+  const start = parseYMD(verifiedWs);
   const days = [];
-  const start = new Date(verifiedWs + 'T00:00:00');
   for (let i = 0; i < 7; i++) {
     const cur = new Date(start);
     cur.setDate(start.getDate() + i);
-    days.push(cur.toISOString().split('T')[0]);
+    days.push(formatYMD(cur));
   }
   return days;
 }
 
 function formatDateAr(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
+  const d = parseYMD(dateStr);
   return `${d.getDate()} ${AR_MONTHS[d.getMonth()]}`;
 }
 
+function formatDateFullAr(dateStr) {
+  const d = parseYMD(dateStr);
+  return `${AR_DAYS[d.getDay()]} ${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function getDayNameAr(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
+  const d = parseYMD(dateStr);
   return AR_DAYS[d.getDay()];
 }
 
@@ -798,8 +826,27 @@ function applyFraction(inputId, custId, fracVal) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  STORAGE (HYBRID LOCALSTORAGE & INDEXEDDB) - GUARANTEED SAVING
+//  APP STATE & STORAGE
 // ══════════════════════════════════════════════════════════════════════════
+let S = {
+  view: 'home',
+  customers: [],
+  week: null,
+  history: [],
+  date: formatYMD(new Date()),
+  currentWs: getWeekStartThursday(formatYMD(new Date())),
+  searchQueryDaily: '',
+  searchQueryReports: '',
+  searchQueryCusts: '',
+  modal: null,
+  editId: null,
+  cDetailId: null,
+  confirm: null,
+  bulkRows: [],
+  calMonth: new Date().getMonth(),
+  calYear: new Date().getFullYear()
+};
+
 function localSet(key, val) {
   try { localStorage.setItem('aby_' + key, JSON.stringify(val)); } catch (e) {}
 }
@@ -811,7 +858,7 @@ function localGet(key) {
 }
 
 async function loadData() {
-  // 1. Customers
+  // Load Customers
   let custs = localGet('customers');
   if (!custs || !custs.length) {
     try {
@@ -825,11 +872,10 @@ async function loadData() {
   S.customers = custs || [];
   S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
-  // 2. Cycle Week
-  // Today is Monday 12 Oct 2026. Thursday of this week is 8 Oct 2026.
-  const todayStr = getSystemTodayStr();
-  S.date = todayStr;
-  const thurStart = getWeekStartThursday(todayStr);
+  // Today & Thursday
+  const realToday = formatYMD(new Date());
+  S.date = realToday;
+  const thurStart = getWeekStartThursday(realToday);
   S.currentWs = thurStart;
 
   let weekData = localGet('week_' + thurStart);
@@ -840,7 +886,6 @@ async function loadData() {
   if (!weekData.paid) weekData.paid = {};
   S.week = weekData;
 
-  // 3. History
   S.history = localGet('history') || [];
 }
 
@@ -854,14 +899,10 @@ function saveWeek() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CALCULATIONS
-// ══════════════════════════════════════════════════════════════════════════
 function calcCustomerWeek(cust, week) {
   const days = getCycleDays(week.ws);
   const entries = week.entries || {};
-  let cowKg = 0;
-  let bufKg = 0;
+  let cowKg = 0, bufKg = 0;
 
   for (const d of days) {
     const e = (entries[cust.id] || {})[d] || {};
@@ -916,6 +957,7 @@ function renderHeaderHTML() {
           </div>
         </div>
         <div class="header-actions">
+          <button class="header-btn" type="button" onclick="openCalendarPicker()">📅 التقويم</button>
           <button class="header-btn" type="button" onclick="openModal('backup')">💾 نسخ</button>
           <button class="header-btn" type="button" onclick="goView('settings')">⚙️</button>
         </div>
@@ -923,7 +965,7 @@ function renderHeaderHTML() {
 
       <div class="week-cycle-bar">
         <button class="week-nav-btn" type="button" onclick="navWeek(-1)">◀ أسبوع سابق</button>
-        <div style="text-align: center;">
+        <div style="text-align: center; cursor: pointer;" onclick="openCalendarPicker()">
           <div style="font-weight: 800; font-size: 11px;">📅 ${getCycleLabel(S.week ? S.week.ws : S.currentWs)}</div>
           <div style="font-size: 10px; color: #a7f3d0; margin-top: 1px;">
             ${isWed ? '🔥 اليوم الأربعاء: موعد تسليم الفلوس لجميع الزباين!' : 'يوم القبض والتصفية: كل يوم أربعاء'}
@@ -957,17 +999,14 @@ function renderBottomNavHTML() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  HOME VIEW (OVERVIEW OF WEEK)
+//  HOME VIEW
 // ══════════════════════════════════════════════════════════════════════════
 function renderHomeView(container) {
   const w = S.week;
   const days = getCycleDays(w.ws);
   const today = S.date;
 
-  let grandTotal = 0;
-  let grandCowKg = 0;
-  let grandBufKg = 0;
-  let recordedToday = 0;
+  let grandTotal = 0, grandCowKg = 0, grandBufKg = 0, recordedToday = 0;
 
   S.customers.forEach(c => {
     const res = calcCustomerWeek(c, w);
@@ -1000,7 +1039,7 @@ function renderHomeView(container) {
       </div>
       <div class="stat-card">
         <div class="stat-value">${recordedToday} / ${S.customers.length}</div>
-        <div class="stat-label">سُجِّلوا اليوم (${getDayNameAr(today)})</div>
+        <div class="stat-label">سُجِّلوا اليوم (${getDayNameAr(today)} ${formatDateAr(today)})</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">${(grandCowKg + grandBufKg).toFixed(1)} <small style="font-size:11px">كجم</small></div>
@@ -1092,7 +1131,7 @@ function renderHomeView(container) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  DAILY MILK ENTRY VIEW (تعديل وإضافة أي يوم بالأسبوع)
+//  DAILY MILK ENTRY VIEW
 // ══════════════════════════════════════════════════════════════════════════
 function renderDailyView(container) {
   const w = S.week;
@@ -1103,13 +1142,15 @@ function renderDailyView(container) {
   const list = S.customers.filter(c => !q || c.name.toLowerCase().includes(q));
 
   container.innerHTML = `
-    <div style="font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
-      اختر أي يوم لتسجيل أو تعديل الكميات:
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--navy);">اختر أي يوم لتسجيل أو تعديل الكميات:</div>
+      <button class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 10px;" type="button" onclick="openCalendarPicker()">📅 كل التواريخ</button>
     </div>
+    
     <div class="days-bar">
       ${days.map((d, idx) => {
         const isSel = d === curDate;
-        const isPayout = idx === 6; // الأربعاء
+        const isPayout = idx === 6;
         return `
           <button class="day-chip ${isSel ? 'active' : ''} ${isPayout ? 'is-payout' : ''}" type="button" onclick="selectDailyDate('${d}')">
             <div class="chip-name">${getDayNameAr(d)}</div>
@@ -1139,7 +1180,7 @@ function renderDailyView(container) {
 
     <div style="position: sticky; bottom: calc(72px + var(--safe-bottom)); z-index: 30; padding: 10px 0; background: linear-gradient(to top, var(--bg) 80%, transparent);">
       <button class="btn btn-success" type="button" onclick="saveDayEntries()">
-        <span>💾</span> حفظ بيانات يوم ${getDayNameAr(curDate)}
+        <span>💾</span> حفظ بيانات يوم ${getDayNameAr(curDate)} (${formatDateAr(curDate)})
       </button>
     </div>
   `;
@@ -1147,7 +1188,6 @@ function renderDailyView(container) {
 
 function renderDailyCustomerCard(cust, dateStr, week) {
   const entry = (week.entries[cust.id] || {})[dateStr] || {};
-  // Value MUST be empty string if 0 or empty (never pre-filled with 0)
   const cowVal = (entry.cow && entry.cow > 0) ? entry.cow : '';
   const bufVal = (entry.buf && entry.buf > 0) ? entry.buf : '';
 
@@ -1164,7 +1204,6 @@ function renderDailyCustomerCard(cust, dateStr, week) {
         </div>
       </div>
 
-      <!-- COW INPUT -->
       <div class="input-row">
         <span class="input-badge">🐄 بقر</span>
         <input 
@@ -1180,7 +1219,6 @@ function renderDailyCustomerCard(cust, dateStr, week) {
         <span class="price-note">${cust.cow ? cust.cow + ' ج' : 'بدون سعر'}</span>
       </div>
 
-      <!-- FRACTIONS IN ARABIC -->
       <div class="frac-bar">
         <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',0.25)">+ ربع</button>
         <button type="button" class="frac-btn" onclick="applyFraction('cow-${cust.id}','${cust.id}',0.5)">+ نص</button>
@@ -1189,7 +1227,6 @@ function renderDailyCustomerCard(cust, dateStr, week) {
         <button type="button" class="frac-btn clear" onclick="applyFraction('cow-${cust.id}','${cust.id}',0)">مسح ✕</button>
       </div>
 
-      <!-- BUFFALO INPUT -->
       ${cust.buffOn ? `
         <div class="input-row" style="margin-top: 6px;">
           <span class="input-badge">🐃 جاموس</span>
@@ -1230,9 +1267,7 @@ function handleMilkInput(custId) {
   const total = (cowNum * (cust.cow || 0)) + (cust.buffOn ? (bufNum * (cust.buff || 0)) : 0);
 
   const moneyEl = document.getElementById(`money-${custId}`);
-  if (moneyEl) {
-    moneyEl.textContent = total > 0 ? `${total.toFixed(2)} ج.م` : '';
-  }
+  if (moneyEl) moneyEl.textContent = total > 0 ? `${total.toFixed(2)} ج.م` : '';
 
   if (!S.week.entries[custId]) S.week.entries[custId] = {};
   if (!S.week.entries[custId][S.date]) S.week.entries[custId][S.date] = {};
@@ -1249,7 +1284,7 @@ function handleMilkInput(custId) {
 function saveDayEntries() {
   S.customers.forEach(c => handleMilkInput(c.id));
   saveWeek();
-  showToast(`✅ تم حفظ بيانات يوم ${getDayNameAr(S.date)} بنجاح`, 'ok');
+  showToast(`✅ تم حفظ بيانات يوم ${getDayNameAr(S.date)} (${formatDateAr(S.date)}) بنجاح`, 'ok');
 }
 
 function selectDailyDate(d) {
@@ -1263,16 +1298,13 @@ function handleSearchDaily(q) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  REPORTS & WEDNESDAY PAYOUTS (حساب كل الزباين وحساب كل زبون لوحده)
+//  REPORTS & WEDNESDAY PAYOUTS
 // ══════════════════════════════════════════════════════════════════════════
 function renderReportsView(container) {
   const w = S.week;
   const days = getCycleDays(w.ws);
 
-  let grandTotal = 0;
-  let grandCowKg = 0;
-  let grandBufKg = 0;
-  let paidCount = 0;
+  let grandTotal = 0, grandCowKg = 0, grandBufKg = 0, paidCount = 0;
 
   const q = S.searchQueryReports.trim().toLowerCase();
 
@@ -1321,13 +1353,11 @@ function renderReportsView(container) {
       </button>
     </div>
 
-    <!-- SEARCH FILTER -->
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input class="search-input" type="text" placeholder="ابحث عن أي زبون لمعرفة حسابه لوحده..." value="${S.searchQueryReports}" oninput="handleSearchReports(this.value)">
     </div>
 
-    <!-- CUSTOMERS BREAKDOWN -->
     <div class="card">
       <div class="card-title" style="margin-bottom: 8px;">📋 حساب كل زبون لوحده بالتفصيل:</div>
 
@@ -1374,7 +1404,6 @@ function renderReportsView(container) {
       </div>
     </div>
 
-    <!-- CLOSE WEEK -->
     <div class="card" style="border: 2px dashed var(--amber); background: #fffcf0;">
       <div class="card-title" style="color: var(--amber);">⚠️ إغلاق حساب هذا الأسبوع</div>
       <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 10px; line-height: 1.5;">
@@ -1399,9 +1428,6 @@ function togglePaidStatus(cId) {
   renderReportsView(document.getElementById('mainContainer'));
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CUSTOMER DETAIL VIEW (تفاصيل أيام الزبون)
-// ══════════════════════════════════════════════════════════════════════════
 function openCustomerDetail(id) {
   S.cDetailId = id;
   goView('cDetail');
@@ -1467,9 +1493,6 @@ function renderCustomerDetailView(container) {
   `;
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CUSTOMERS LIST
-// ══════════════════════════════════════════════════════════════════════════
 function renderCustomersView(container) {
   const q = S.searchQueryCusts.trim().toLowerCase();
   const list = S.customers.filter(c => !q || c.name.toLowerCase().includes(q));
@@ -1521,9 +1544,6 @@ function handleSearchCusts(q) {
   renderCustomersView(document.getElementById('mainContainer'));
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HISTORY & SETTINGS
-// ══════════════════════════════════════════════════════════════════════════
 function renderHistoryView(container) {
   const closedWeeks = S.history.filter(w => w.closed);
 
@@ -1544,7 +1564,7 @@ function renderHistoryView(container) {
             <div>
               <div style="font-size: 14px; font-weight: 800; color: var(--navy);">📅 ${getCycleLabel(w.ws)}</div>
               <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
-                تاريخ الصرف: ${w.closedAt ? new Date(w.closedAt).toLocaleDateString('ar-EG') : 'ـ'}
+                تاريخ الصرف: ${w.closedAt ? formatDateFullAr(w.closedAt.split('T')[0]) : 'ـ'}
               </div>
             </div>
             <div style="text-align: left;">
@@ -1575,6 +1595,7 @@ function renderSettingsView(container) {
       <div class="card-title">⚙️ إدارة البيانات والنسخ الاحتياطي</div>
       <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">نظام متجر أبو يوسف للألبان</div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="btn btn-outline" type="button" onclick="openCalendarPicker()">📅 فتح التقويم الشامل لاختيار أي تاريخ</button>
         <button class="btn btn-outline" type="button" onclick="openModal('backup')">💾 تحميل نسخة احتياطية (JSON)</button>
         <button class="btn btn-outline" type="button" onclick="triggerRestoreInput()">📥 استرجاع نسخة سابقة من ملف</button>
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
@@ -1593,7 +1614,110 @@ function renderSettingsView(container) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  MODALS (BULK ADD WITH MULTIPLE ROWS & QUICK +HALF, SINGLE ADD)
+//  INTERACTIVE MONTH CALENDAR MODAL
+// ══════════════════════════════════════════════════════════════════════════
+function openCalendarPicker() {
+  const curD = parseYMD(S.date);
+  S.calMonth = curD.getMonth();
+  S.calYear = curD.getFullYear();
+  openModal('calendar');
+}
+
+function renderCalendarModalHTML() {
+  const monthName = AR_MONTHS[S.calMonth];
+  const year = S.calYear;
+
+  // First day of this month
+  const firstDayObj = new Date(year, S.calMonth, 1, 12, 0, 0);
+  const firstDayIndex = firstDayObj.getDay(); // 0: Sun ... 6: Sat
+  // Map index to match header: [الخميس, الجمعة, السبت, الأحد, الاثنين, الثلاثاء, الأربعاء]
+  // In our header order: Thu(4)=0, Fri(5)=1, Sat(6)=2, Sun(0)=3, Mon(1)=4, Tue(2)=5, Wed(3)=6
+  const headerOrder = [4, 5, 6, 0, 1, 2, 3];
+  const offset = (firstDayIndex - 4 + 7) % 7;
+
+  // Total days in month
+  const daysInMonth = new Date(year, S.calMonth + 1, 0).getDate();
+
+  const realTodayYMD = formatYMD(new Date());
+
+  const cells = [];
+  // Empty leading cells
+  for (let i = 0; i < offset; i++) {
+    cells.push(`<div></div>`);
+  }
+  // Days of month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dStr = `${year}-${String(S.calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = dStr === realTodayYMD;
+    const isSelected = dStr === S.date;
+    const isWed = parseYMD(dStr).getDay() === 3;
+    cells.push(`
+      <button 
+        type="button" 
+        class="cal-day-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isWed ? 'payout' : ''}" 
+        onclick="pickCalendarDate('${dStr}')"
+      >
+        ${day}
+      </button>
+    `);
+  }
+
+  return `
+    <div class="modal-head">
+      <div class="modal-title">📅 التقويم الشامل — اختيار التاريخ</div>
+      <button class="modal-close" type="button" onclick="closeModal()">✕</button>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <button class="btn btn-sm btn-outline" style="width: auto;" type="button" onclick="changeCalMonth(-1)">◀ شهر سابق</button>
+      <div style="font-weight: 800; font-size: 14px; color: var(--navy);">${monthName} ${year}</div>
+      <button class="btn btn-sm btn-outline" style="width: auto;" type="button" onclick="changeCalMonth(1)">شهر تالي ▶</button>
+    </div>
+
+    <div class="cal-grid">
+      <div class="cal-head">خميس</div>
+      <div class="cal-head">جمعة</div>
+      <div class="cal-head">سبت</div>
+      <div class="cal-head">أحد</div>
+      <div class="cal-head">اثنين</div>
+      <div class="cal-head">ثلاث</div>
+      <div class="cal-head" style="color: var(--green);">أربع 💰</div>
+      ${cells.join('')}
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-top: 10px;">
+      <button class="btn btn-primary btn-sm" type="button" onclick="pickCalendarDate('${formatYMD(new Date())}')" style="flex: 1;">
+        📍 الذهاب إلى تاريخ اليوم (${formatDateAr(formatYMD(new Date()))})
+      </button>
+      <button class="btn btn-outline btn-sm" type="button" onclick="closeModal()" style="flex: 1;">إغلاق</button>
+    </div>
+  `;
+}
+
+function changeCalMonth(delta) {
+  S.calMonth += delta;
+  if (S.calMonth < 0) { S.calMonth = 11; S.calYear--; }
+  else if (S.calMonth > 11) { S.calMonth = 0; S.calYear++; }
+  render();
+}
+
+function pickCalendarDate(dStr) {
+  S.date = dStr;
+  const thur = getWeekStartThursday(dStr);
+  S.currentWs = thur;
+  let w = localGet('week_' + thur);
+  if (!w) {
+    w = { ws: thur, entries: {}, paid: {}, closed: false };
+    localSet('week_' + thur, w);
+  }
+  S.week = w;
+  closeModal();
+  goView('daily');
+  showToast(`📅 تم الانتقال إلى يوم ${getDayNameAr(dStr)} ${formatDateAr(dStr)}`, 'ok');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  MODALS
 // ══════════════════════════════════════════════════════════════════════════
 function renderModalHTML() {
   if (!S.modal && !S.confirm) return '';
@@ -1625,9 +1749,10 @@ function renderModalHTML() {
 
 function renderModalBody() {
   switch (S.modal) {
+    case 'calendar':
+      return renderCalendarModalHTML();
+
     case 'bulkAdd':
-      // CRITICAL:
-      // "ورجع قايمه اضافه الزباين مره واحده تحت بعض وكل واحد قدامو سعر اللبن الرقم الاول البقر والتاني الجاموس لو بيجيب و.5 يعني ونص اقدر اكبها ف خانه الاسعار لما اضيف مره واحده"
       if (!S.bulkRows || !S.bulkRows.length) {
         S.bulkRows = [
           { name: '', cow: '', buf: '' },
@@ -1643,10 +1768,9 @@ function renderModalBody() {
         </div>
 
         <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
-          اكتب اسم كل زبون وقدامه سعر البقر وسعر الجاموس (الأسعار اختيارية وتقدر تكتب نص مثل 15.5):
+          اكتب اسم كل زبون وقدامه سعر البقر وسعر الجاموس (تقدر تكتب نص مثل 15.5 بزر +نص):
         </div>
 
-        <!-- FAST TEXTAREA PASTE -->
         <div style="margin-bottom: 10px;">
           <label class="form-lbl">أو الصق أسماء الزباين تحت بعض بسرعة:</label>
           <textarea 
@@ -1659,7 +1783,6 @@ function renderModalBody() {
           </button>
         </div>
 
-        <!-- DYNAMIC ROWS -->
         <div id="bulkRowsList" style="max-height: 40vh; overflow-y: auto; padding-right: 2px;">
           ${S.bulkRows.map((r, i) => `
             <div class="bulk-row" id="brow-${i}">
@@ -1670,10 +1793,10 @@ function renderModalBody() {
                 id="br-name-${i}" 
                 value="${r.name}"
               >
-              <div style="flex: 1.2; display: flex; align-items: center; gap: 2px;">
+              <div style="flex: 1.4; display: flex; align-items: center; gap: 2px;">
                 <input 
                   class="form-ctl" 
-                  style="padding: 7px 6px; font-size: 13px; text-align: center;" 
+                  style="padding: 7px 4px; font-size: 13px; text-align: center;" 
                   type="number" 
                   step="any" 
                   placeholder="بقر" 
@@ -1682,10 +1805,10 @@ function renderModalBody() {
                 >
                 <button type="button" class="half-btn" title="إضافة نصف" onclick="addHalfToInput('br-cow-${i}')">+نص</button>
               </div>
-              <div style="flex: 1.2; display: flex; align-items: center; gap: 2px;">
+              <div style="flex: 1.4; display: flex; align-items: center; gap: 2px;">
                 <input 
                   class="form-ctl" 
-                  style="padding: 7px 6px; font-size: 13px; text-align: center;" 
+                  style="padding: 7px 4px; font-size: 13px; text-align: center;" 
                   type="number" 
                   step="any" 
                   placeholder="جاموس" 
@@ -1725,14 +1848,14 @@ function renderModalBody() {
           <label class="form-lbl">سعر لبن البقر (ج.م / كجم) - اختياري</label>
           <div style="display: flex; gap: 6px;">
             <input class="form-ctl" id="singleCustCow" type="number" step="any" placeholder="مثال: 15 أو 15.5" value="${cust && cust.cow ? cust.cow : ''}">
-            <button type="button" class="half-btn" style="min-width: 50px;" onclick="addHalfToInput('singleCustCow')">+ نص</button>
+            <button type="button" class="half-btn" onclick="addHalfToInput('singleCustCow')">+ نص</button>
           </div>
         </div>
         <div class="form-grp">
           <label class="form-lbl">سعر لبن الجاموس (ج.م / كجم) - اختياري</label>
           <div style="display: flex; gap: 6px;">
             <input class="form-ctl" id="singleCustBuf" type="number" step="any" placeholder="مثال: 25 أو 25.5" value="${cust && cust.buff ? cust.buff : ''}">
-            <button type="button" class="half-btn" style="min-width: 50px;" onclick="addHalfToInput('singleCustBuf')">+ نص</button>
+            <button type="button" class="half-btn" onclick="addHalfToInput('singleCustBuf')">+ نص</button>
           </div>
         </div>
         <button class="btn btn-primary" type="button" onclick="submitSingleCustomer()" style="margin-top: 8px;">
@@ -1765,13 +1888,10 @@ function openModal(m) { S.modal = m; render(); }
 function closeModal() { S.modal = null; S.editId = null; render(); }
 function closeConfirm() { S.confirm = null; render(); }
 
-// ─── ADD HALF (+0.5) TO ANY INPUT ───
 function addHalfToInput(id) {
   const inp = document.getElementById(id);
   if (!inp) return;
   const val = parseFloat(inp.value) || 0;
-  // If val is integer like 15, make 15.5
-  // If already has .5, don't double, or toggle
   if (val % 1 === 0.5) {
     inp.value = Math.floor(val);
   } else {
@@ -1779,7 +1899,6 @@ function addHalfToInput(id) {
   }
 }
 
-// ─── BULK ROWS LOGIC ───
 function syncCurrentBulkRowsFromDOM() {
   S.bulkRows.forEach((r, i) => {
     const nEl = document.getElementById(`br-name-${i}`);
@@ -1860,7 +1979,6 @@ function submitBulkRows() {
   showToast(`✅ تمت إضافة ${count} زبون بنجاح وكل زبون مسجل لوحده!`, 'ok');
 }
 
-// ─── SINGLE CUSTOMER SUBMISSION ───
 function openEditModal(id) {
   S.editId = id;
   S.modal = 'edit';
@@ -1927,9 +2045,6 @@ function executeDeleteCustomer(id) {
   showToast('🗑️ تم حذف الزبون بنجاح', 'ok');
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  WEEK CLOSE & NAVIGATION
-// ══════════════════════════════════════════════════════════════════════════
 function confirmCloseWeek() {
   const w = S.week;
   const days = getCycleDays(w.ws);
@@ -1957,10 +2072,9 @@ function executeCloseWeek() {
   S.history.push(archived);
   localSet('history', S.history);
 
-  // Next week starts Thursday (+7 days)
-  const nextThu = new Date(curWeek.ws + 'T00:00:00');
-  nextThu.setDate(nextThu.getDate() + 7);
-  const nextWs = nextThu.toISOString().split('T')[0];
+  const startD = parseYMD(curWeek.ws);
+  startD.setDate(startD.getDate() + 7);
+  const nextWs = formatYMD(startD);
 
   const newWeek = { ws: nextWs, entries: {}, paid: {}, closed: false };
   localSet('week_' + nextWs, newWeek);
@@ -1975,9 +2089,9 @@ function executeCloseWeek() {
 }
 
 function navWeek(delta) {
-  const d = new Date(S.currentWs + 'T00:00:00');
-  d.setDate(d.getDate() + (delta * 7));
-  const newWs = d.toISOString().split('T')[0];
+  const curD = parseYMD(S.currentWs);
+  curD.setDate(curD.getDate() + (delta * 7));
+  const newWs = formatYMD(curD);
   S.currentWs = newWs;
 
   let w = localGet('week_' + newWs);
@@ -1990,9 +2104,6 @@ function navWeek(delta) {
   render();
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  WHATSAPP SHARING & EXPORT
-// ══════════════════════════════════════════════════════════════════════════
 function shareCustomerWhatsApp(cId) {
   const cust = S.customers.find(c => c.id === cId);
   if (!cust) return;
@@ -2007,7 +2118,7 @@ function shareCustomerWhatsApp(cId) {
     const buf = cust.buffOn ? (e.buf || 0) : 0;
     const tot = cow + buf;
     if (tot > 0) {
-      daysText += `• ${getDayNameAr(d)}: ${formatKgArabic(tot)}\n`;
+      daysText += `• ${getDayNameAr(d)} (${formatDateAr(d)}): ${formatKgArabic(tot)}\n`;
     }
   });
 
@@ -2077,7 +2188,7 @@ function exportWeekCSV() {
 
 function downloadBackupJSON() {
   const data = {
-    version: '5.0',
+    version: '6.0',
     cycle: 'ThursdayToWednesday',
     customers: S.customers,
     week: S.week,
@@ -2104,31 +2215,17 @@ function handleRestoreFile(input) {
   reader.onload = e => {
     try {
       const d = JSON.parse(e.target.result);
-      if (d.customers) {
-        S.customers = d.customers;
-        saveCustomers();
-      }
-      if (d.week) {
-        S.week = d.week;
-        saveWeek();
-      }
-      if (d.history) {
-        S.history = d.history;
-        localSet('history', S.history);
-      }
+      if (d.customers) { S.customers = d.customers; saveCustomers(); }
+      if (d.week) { S.week = d.week; saveWeek(); }
+      if (d.history) { S.history = d.history; localSet('history', S.history); }
       closeModal();
       showToast('✅ تم استرجاع البيانات بنجاح', 'ok');
       render();
-    } catch (err) {
-      showToast('❌ ملف غير صالح', 'err');
-    }
+    } catch (err) { showToast('❌ ملف غير صالح', 'err'); }
   };
   reader.readAsText(file);
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════════════════════════════════
 function goView(v) {
   S.view = v;
   render();
@@ -2148,7 +2245,7 @@ function showToast(msg, type = '') {
 // PWA Offline Service Worker
 if ('serviceWorker' in navigator) {
   const swCode = `
-    const C='aby-dairy-v5';
+    const C='aby-dairy-v6';
     self.addEventListener('install', e => self.skipWaiting());
     self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
     self.addEventListener('fetch', e => {
