@@ -8,7 +8,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="أبو يوسف للألبان">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="أبو يوسف للألبان">
 <title>أبو يوسف للألبان - إدارة وتوريد الألبان</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -83,7 +87,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 .header-brand {
   display: flex;
@@ -113,7 +117,7 @@ html, body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 .header-btn {
   background: rgba(255,255,255,.14);
@@ -125,6 +129,26 @@ html, body {
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.header-btn.folder-connected {
+  background: rgba(5, 150, 105, 0.4);
+  border-color: #6ee7b7;
+  color: #a7f3d0;
+}
+
+/* ─── FOLDER STATUS BANNER ─── */
+.folder-status-bar {
+  background: rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
 }
 
 /* ─── WEEK CYCLE BAR (الخميس إلى الأربعاء) ─── */
@@ -132,7 +156,7 @@ html, body {
   background: rgba(255,255,255,.08);
   border-radius: 10px;
   padding: 8px 10px;
-  margin-top: 10px;
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -150,9 +174,7 @@ html, body {
   cursor: pointer;
   font-family: inherit;
 }
-.week-nav-btn:active {
-  background: rgba(255,255,255,.3);
-}
+.week-nav-btn:active { background: rgba(255,255,255,.3); }
 
 /* ─── MAIN CONTAINER ─── */
 .main-view {
@@ -194,14 +216,8 @@ html, body {
   gap: 3px;
   position: relative;
 }
-.nav-tab .tab-icon {
-  font-size: 20px;
-  line-height: 1;
-}
-.nav-tab.active {
-  color: var(--blue);
-  font-weight: 800;
-}
+.nav-tab .tab-icon { font-size: 20px; line-height: 1; }
+.nav-tab.active { color: var(--blue); font-weight: 800; }
 .nav-tab.active::after {
   content: '';
   position: absolute;
@@ -723,7 +739,6 @@ html, body {
 const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const AR_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
-// Safe Date Formatting & Parsing (Never uses toISOString which subtracts hours in GMT+3)
 function formatYMD(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -734,12 +749,9 @@ function formatYMD(d) {
 function parseYMD(str) {
   if (!str) return new Date();
   const parts = String(str).split('-').map(Number);
-  // Noon (12:00:00) avoids any daylight-saving midnight boundary shifts!
   return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
 }
 
-// Get the Thursday (start of week) for any date:
-// In JS: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
 function getWeekStartThursday(dateStr) {
   const d = parseYMD(dateStr);
   const day = d.getDay();
@@ -748,7 +760,6 @@ function getWeekStartThursday(dateStr) {
   return formatYMD(d);
 }
 
-// 7 exact days of the collection week from Thursday to Wednesday
 function getCycleDays(ws) {
   const verifiedWs = getWeekStartThursday(ws);
   const start = parseYMD(verifiedWs);
@@ -826,7 +837,7 @@ function applyFraction(inputId, custId, fracVal) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  APP STATE & STORAGE
+//  STATE & PERSISTENCE
 // ══════════════════════════════════════════════════════════════════════════
 let S = {
   view: 'home',
@@ -844,7 +855,8 @@ let S = {
   confirm: null,
   bulkRows: [],
   calMonth: new Date().getMonth(),
-  calYear: new Date().getFullYear()
+  calYear: new Date().getFullYear(),
+  folderHandle: null
 };
 
 function localSet(key, val) {
@@ -857,22 +869,224 @@ function localGet(key) {
   } catch (e) { return null; }
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+//  INDEXED DB & REAL HARD DRIVE FOLDER SYNC (حفظ في الفولدر المحدد)
+// ══════════════════════════════════════════════════════════════════════════
+let _db;
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('AbyDairyMainDB', 1);
+    r.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
+      if (!d.objectStoreNames.contains('customers')) d.createObjectStore('customers', { keyPath: 'id' });
+    };
+    r.onsuccess = e => { _db = e.target.result; res(); };
+    r.onerror = rej;
+  });
+}
+
+function dbPutMeta(key, val) {
+  return new Promise(res => {
+    try {
+      const tx = _db.transaction('meta', 'readwrite');
+      tx.objectStore('meta').put(val, key);
+      tx.oncomplete = () => res();
+      tx.onerror = () => res();
+    } catch(e) { res(); }
+  });
+}
+
+function dbGetMeta(key) {
+  return new Promise(res => {
+    try {
+      const tx = _db.transaction('meta', 'readonly');
+      const q = tx.objectStore('meta').get(key);
+      q.onsuccess = () => res(q.result);
+      q.onerror = () => res(null);
+    } catch(e) { res(null); }
+  });
+}
+
+async function initFolder() {
+  try {
+    const handle = await dbGetMeta('folderHandle');
+    if (handle) {
+      const perm = await handle.queryPermission({ mode: 'readwrite' });
+      if (perm === 'granted') {
+        S.folderHandle = handle;
+      }
+    }
+  } catch(e) {}
+}
+
+async function pickFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    showToast('⚠️ متصفحك لا يدعم ربط المجلد المباشر. يتم الحفظ التلقائي في ذاكرة الجهاز والتطبيق.', 'warn');
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    S.folderHandle = handle;
+    await dbPutMeta('folderHandle', handle);
+    showToast('📁 تم ربط المجلد بنجاح! سيتم حفظ الملفات تلقائياً فيه.', 'ok');
+    await syncAllFilesToDisk();
+    render();
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      showToast('❌ تعذر ربط المجلد: ' + e.message, 'err');
+    }
+  }
+}
+
+async function writeDiskFile(filename, content) {
+  if (!S.folderHandle) return;
+  try {
+    const perm = await S.folderHandle.queryPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') {
+      const req = await S.folderHandle.requestPermission({ mode: 'readwrite' });
+      if (req !== 'granted') return;
+    }
+    const fh = await S.folderHandle.getFileHandle(filename, { create: true });
+    const wr = await fh.createWritable();
+    await wr.write(content);
+    await wr.close();
+  } catch (e) {
+    console.warn('Could not write file ' + filename + ' to disk:', e);
+  }
+}
+
+// ─── GENERATE HUMAN-READABLE ARABIC FILES (مش مجرد أكواد) ───
+function generateReadableCustomersJSON() {
+  return JSON.stringify({
+    "اسم_النظام": "متجر أبو يوسف للألبان",
+    "تاريخ_التحديث": formatYMD(new Date()),
+    "إجمالي_عدد_الزباين": S.customers.length,
+    "قائمة_الزباين": S.customers.map(c => ({
+      "اسم_الزبون": c.name,
+      "سعر_لبن_البقر_ج_م": c.cow || 0,
+      "يجلب_لبن_جاموس": !!c.buffOn,
+      "سعر_لبن_الجاموس_ج_م": c.buff || 0,
+      "تاريخ_التسجيل": c.addedAt || formatYMD(new Date())
+    }))
+  }, null, 2);
+}
+
+function generateReadableWeekJSON(w) {
+  const days = getCycleDays(w.ws);
+  let totalWeekMoney = 0;
+
+  const customerList = S.customers.map(c => {
+    const res = calcCustomerWeek(c, w);
+    totalWeekMoney += res.total;
+    const dayBreakdown = {};
+    days.forEach(d => {
+      const e = (w.entries[c.id] || {})[d] || {};
+      const cow = e.cow || 0;
+      const buf = c.buffOn ? (e.buf || 0) : 0;
+      if (cow > 0 || buf > 0) {
+        dayBreakdown[`${getDayNameAr(d)} ${formatDateAr(d)}`] = {
+          "بقر_كجم": cow,
+          "جاموس_كجم": buf,
+          "المجموع_كجم": cow + buf
+        };
+      }
+    });
+
+    return {
+      "اسم_الزبون": c.name,
+      "سعر_البقر_ج_م": c.cow || 0,
+      "سعر_الجاموس_ج_م": c.buff || 0,
+      "إجمالي_البقر_كجم": res.cowKg,
+      "إجمالي_الجاموس_كجم": res.bufKg,
+      "إجمالي_اللبن_كجم": res.totalKg,
+      "المبلغ_المستحق_له_يوم_الأربعاء_ج_م": res.total,
+      "حالة_القبض": (w.paid && w.paid[c.id]) ? "تم القبض ✅" : "لم يقبض بعد ⏳",
+      "التوريد_اليومي": dayBreakdown
+    };
+  });
+
+  return JSON.stringify({
+    "اسم_المتجر": "متجر أبو يوسف للألبان",
+    "دورة_الأسبوع": getCycleLabel(w.ws),
+    "تاريخ_بداية_الأسبوع_الخميس": w.ws,
+    "تاريخ_يوم_القبض_الأربعاء": days[6],
+    "إجمالي_المبالغ_المستحقة_لكل_الزباين_ج_م": totalWeekMoney,
+    "عدد_الزباين": S.customers.length,
+    "تفاصيل_كل_زبون": customerList
+  }, null, 2);
+}
+
+function generateReadableReportHTML(w) {
+  const days = getCycleDays(w.ws);
+  let grand = 0;
+  const rows = S.customers.map(c => {
+    const res = calcCustomerWeek(c, w);
+    grand += res.total;
+    return { c, ...res };
+  });
+
+  return `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير أسبوع ${getCycleLabel(w.ws)}</title>
+<style>body{font-family:Arial,Tahoma,sans-serif;direction:rtl;padding:24px;color:#0f172a;max-width:960px;margin:auto}
+h1{color:#0b1e38;font-size:22px}h2{color:#1d4ed8;font-size:15px;margin:6px 0 4px}p{color:#64748b;font-size:12px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;margin-bottom:24px}
+th{background:#0b1e38;color:#fff;padding:9px 6px;font-size:12px;text-align:center}
+td{padding:8px 6px;border:1px solid #dde3ef;text-align:center;font-size:12px}
+.tot{font-weight:800;color:#059669;background:#ecfdf5}
+.grand{font-size:17px;font-weight:900;color:#059669}
+</style></head><body>
+<h1>🥛 متجر أبو يوسف للألبان</h1>
+<h2>تقرير أسبوع: ${getCycleLabel(w.ws)}</h2>
+<p>📅 تاريخ الطباعة: ${formatDateFullAr(formatYMD(new Date()))} | عدد الزباين: ${S.customers.length}</p>
+<table><thead><tr><th>الزبون</th>${days.map(d => `<th>${formatDateAr(d)}<br><span style="font-size:10px">${getDayNameAr(d)}</span></th>`).join('')}<th>كجم</th><th>المبلغ ج.م</th></tr></thead>
+<tbody>
+${rows.map(r => `<tr><td style="text-align:right;font-weight:700;padding-right:8px">${r.c.name}</td>${days.map(d => {
+  const e = (w.entries[r.c.id] || {})[d] || {};
+  const t = (e.cow || 0) + (e.buf || 0);
+  return `<td>${t > 0 ? t : 'ـ'}</td>`;
+}).join('')}<td>${r.totalKg.toFixed(2)}</td><td class="tot">${r.total.toFixed(2)}</td></tr>`).join('')}
+<tr><td colspan="${days.length + 2}"><strong>الإجمالي المطلوب دفعه لجميع الزباين يوم الأربعاء</strong></td><td class="grand">${grand.toFixed(2)} ج.م</td></tr>
+</tbody></table></body></html>`;
+}
+
+async function syncAllFilesToDisk() {
+  if (!S.folderHandle) return;
+  await writeDiskFile('customers.json', generateReadableCustomersJSON());
+  if (S.week) {
+    await writeDiskFile(`week-${S.week.ws}.json`, generateReadableWeekJSON(S.week));
+    await writeDiskFile('الأسبوع_الحالي.json', generateReadableWeekJSON(S.week));
+    await writeDiskFile(`report-${S.week.ws}.html`, generateReadableReportHTML(S.week));
+  }
+}
+
 async function loadData() {
-  // Load Customers
+  await idb();
+  await initFolder();
+
   let custs = localGet('customers');
   if (!custs || !custs.length) {
     try {
       const res = await fetch('customers.json');
       if (res.ok) {
         const json = await res.json();
-        if (json.customers) custs = json.customers;
+        if (json.قائمة_الزباين) {
+          custs = json.قائمة_الزباين.map(c => ({
+            id: uid(),
+            name: c.اسم_الزبون,
+            cow: c.سعر_لبن_البقر_ج_م || 0,
+            buffOn: !!c.يجلب_لبن_جاموس,
+            buff: c.سعر_لبن_الجاموس_ج_م || 0,
+            addedAt: c.تاريخ_التسجيل
+          }));
+        } else if (json.customers) {
+          custs = json.customers;
+        }
       }
     } catch (e) {}
   }
   S.customers = custs || [];
-  S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  S.customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
 
-  // Today & Thursday
   const realToday = formatYMD(new Date());
   S.date = realToday;
   const thurStart = getWeekStartThursday(realToday);
@@ -891,11 +1105,13 @@ async function loadData() {
 
 function saveCustomers() {
   localSet('customers', S.customers);
+  syncAllFilesToDisk();
 }
 
 function saveWeek() {
   if (S.week) {
     localSet('week_' + S.week.ws, S.week);
+    syncAllFilesToDisk();
   }
 }
 
@@ -946,6 +1162,7 @@ function render() {
 
 function renderHeaderHTML() {
   const isWed = getDayNameAr(S.date) === 'الأربعاء';
+  const hasFolder = !!S.folderHandle;
   return `
     <header class="app-header">
       <div class="header-row">
@@ -957,8 +1174,10 @@ function renderHeaderHTML() {
           </div>
         </div>
         <div class="header-actions">
+          <button class="header-btn ${hasFolder ? 'folder-connected' : ''}" type="button" onclick="pickFolder()" title="ربط مجلد الحفظ على الكمبيوتر">
+            <span>${hasFolder ? '📁 متصل' : '📁 ربط مجلد'}</span>
+          </button>
           <button class="header-btn" type="button" onclick="openCalendarPicker()">📅 التقويم</button>
-          <button class="header-btn" type="button" onclick="openModal('backup')">💾 نسخ</button>
           <button class="header-btn" type="button" onclick="goView('settings')">⚙️</button>
         </div>
       </div>
@@ -1020,6 +1239,16 @@ function renderHomeView(container) {
   const isWedToday = getDayNameAr(today) === 'الأربعاء';
 
   container.innerHTML = `
+    ${!S.folderHandle ? `
+      <div style="background: #eff6ff; border: 1.5px dashed var(--blue); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 12px; font-weight: 800; color: var(--navy);">📁 حفظ الملفات في مجلد جهازك تلقائياً</div>
+          <div style="font-size: 10px; color: var(--muted);">اربط مجلد العمل ليتم حفظ كشوفات الزباين وملفات JSON فيها فوراً</div>
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" onclick="pickFolder()" style="width: auto;">ربط المجلد الآن</button>
+      </div>
+    ` : ''}
+
     ${isWedToday ? `
       <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px;">
         <div style="font-size: 15px; font-weight: 900; margin-bottom: 3px;">🔔 اليوم الأربعاء — موعد تسليم الفلوس لجميع العملاء!</div>
@@ -1070,7 +1299,7 @@ function renderHomeView(container) {
         <div style="text-align: center; padding: 24px 10px; color: var(--muted);">
           <div style="font-size: 34px; margin-bottom: 4px;">👥</div>
           <div>لا يوجد زباين مسجلين بعد</div>
-          <button class="btn btn-primary btn-sm" type="button" onclick="openModal('bulkAdd')" style="margin-top: 8px;">+ إضافة زباين بالجملة</button>
+          <button class="btn btn-primary btn-sm" type="button" onclick="openModal('add')" style="margin-top: 8px;">+ إضافة زبون جديد</button>
         </div>
       ` : `
         <div class="table-scroll">
@@ -1146,7 +1375,7 @@ function renderDailyView(container) {
       <div style="font-size: 11px; font-weight: 700; color: var(--navy);">اختر أي يوم لتسجيل أو تعديل الكميات:</div>
       <button class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 10px;" type="button" onclick="openCalendarPicker()">📅 كل التواريخ</button>
     </div>
-    
+
     <div class="days-bar">
       ${days.map((d, idx) => {
         const isSel = d === curDate;
@@ -1590,24 +1819,37 @@ function loadHistoricalWeek(ws) {
 }
 
 function renderSettingsView(container) {
+  const hasFolder = !!S.folderHandle;
   container.innerHTML = `
     <div class="card">
-      <div class="card-title">⚙️ إدارة البيانات والنسخ الاحتياطي</div>
-      <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">نظام متجر أبو يوسف للألبان</div>
+      <div class="card-title">📁 ربط المجلد وحفظ البيانات على جهازك</div>
+      <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.6;">
+        ${hasFolder ? `
+          ✅ المجلد متصل بنجاح على جهازك! كل زبون يُضاف وكل كيلو يُسجل يتم حفظه فوراً في ملفات منسقة ومفهومة (customers.json و week-....json).
+        ` : `
+          اضغط أدناه لاختيار مجلد المشروع على جهازك (مثل D:\\الشغل\\dad). سيقوم التطبيق بحفظ ملفات الزباين وكشوفات الحسابات تلقائياً داخل المجلد بشكل منسق ومفهوم.
+        `}
+      </div>
+      <button class="btn ${hasFolder ? 'btn-outline' : 'btn-primary'}" type="button" onclick="pickFolder()">
+        <span>📁</span> ${hasFolder ? 'تغيير المجلد المتصل' : 'اختيار وربط مجلد الحفظ'}
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ النسخ الاحتياطي والملفات</div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button class="btn btn-outline" type="button" onclick="openCalendarPicker()">📅 فتح التقويم الشامل لاختيار أي تاريخ</button>
-        <button class="btn btn-outline" type="button" onclick="openModal('backup')">💾 تحميل نسخة احتياطية (JSON)</button>
+        <button class="btn btn-outline" type="button" onclick="downloadBackupJSON()">💾 تحميل نسخة احتياطية من كل البيانات (JSON)</button>
         <button class="btn btn-outline" type="button" onclick="triggerRestoreInput()">📥 استرجاع نسخة سابقة من ملف</button>
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
       </div>
     </div>
+
     <div class="card">
-      <div class="card-title">ℹ️ نظام العمل الأسبوعي</div>
+      <div class="card-title">📱 جاهز للتحويل إلى تطبيق عبر PWABuilder</div>
       <div style="font-size: 12px; color: var(--ink-secondary); line-height: 1.7;">
-        • <strong>دورة الأسبوع:</strong> تبدأ من <strong>الخميس</strong> حتى <strong>الأربعاء</strong>.<br>
-        • <strong>يوم الأربعاء:</strong> يوم القبض وتسليم الفلوس لجميع الزباين وحساب تفاصيل الأسبوع.<br>
-        • <strong>الكسور:</strong> أزرار عربية (+ ربع، + نص، + تلات أرباع، + كيلو).<br>
-        • <strong>الأسعار:</strong> يمكن وضع كسر في السعر (مثل 15.5 أو 25.5) بزر <strong>+ نص</strong>.
+        • تم تضمين ملف <code>manifest.json</code> و <code>sw.js</code> والأيقونات عالية الدقة 192px و 512px.<br>
+        • يمكنك فتح رابط المستودع على <a href="https://pwabuilder.com/" target="_blank" style="color: var(--blue); font-weight: 700;">PWABuilder</a> وتحويله مباشرة إلى تطبيق أندرويد (APK) وتطبيق موبايل كامل!
       </div>
     </div>
   `;
@@ -1627,25 +1869,14 @@ function renderCalendarModalHTML() {
   const monthName = AR_MONTHS[S.calMonth];
   const year = S.calYear;
 
-  // First day of this month
   const firstDayObj = new Date(year, S.calMonth, 1, 12, 0, 0);
-  const firstDayIndex = firstDayObj.getDay(); // 0: Sun ... 6: Sat
-  // Map index to match header: [الخميس, الجمعة, السبت, الأحد, الاثنين, الثلاثاء, الأربعاء]
-  // In our header order: Thu(4)=0, Fri(5)=1, Sat(6)=2, Sun(0)=3, Mon(1)=4, Tue(2)=5, Wed(3)=6
-  const headerOrder = [4, 5, 6, 0, 1, 2, 3];
+  const firstDayIndex = firstDayObj.getDay();
   const offset = (firstDayIndex - 4 + 7) % 7;
-
-  // Total days in month
   const daysInMonth = new Date(year, S.calMonth + 1, 0).getDate();
-
   const realTodayYMD = formatYMD(new Date());
 
   const cells = [];
-  // Empty leading cells
-  for (let i = 0; i < offset; i++) {
-    cells.push(`<div></div>`);
-  }
-  // Days of month
+  for (let i = 0; i < offset; i++) cells.push(`<div></div>`);
   for (let day = 1; day <= daysInMonth; day++) {
     const dStr = `${year}-${String(S.calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const isToday = dStr === realTodayYMD;
@@ -1717,7 +1948,7 @@ function pickCalendarDate(dStr) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  MODALS
+//  MODALS & CUSTOMER CREATION (GUARANTEED TO WORK)
 // ══════════════════════════════════════════════════════════════════════════
 function renderModalHTML() {
   if (!S.modal && !S.confirm) return '';
@@ -1842,7 +2073,15 @@ function renderModalBody() {
         </div>
         <div class="form-grp">
           <label class="form-lbl">اسم الزبون</label>
-          <input class="form-ctl" id="singleCustName" type="text" placeholder="أدخل اسم الزبون" value="${cust ? cust.name : ''}">
+          <input 
+            class="form-ctl" 
+            id="singleCustName" 
+            type="text" 
+            placeholder="أدخل اسم الزبون (مثال: محمد السيد)" 
+            value="${cust ? cust.name : ''}"
+            onkeydown="if(event.key==='Enter')submitSingleCustomer()"
+            autofocus
+          >
         </div>
         <div class="form-grp">
           <label class="form-lbl">سعر لبن البقر (ج.م / كجم) - اختياري</label>
@@ -1858,7 +2097,7 @@ function renderModalBody() {
             <button type="button" class="half-btn" onclick="addHalfToInput('singleCustBuf')">+ نص</button>
           </div>
         </div>
-        <button class="btn btn-primary" type="button" onclick="submitSingleCustomer()" style="margin-top: 8px;">
+        <button class="btn btn-primary" type="button" id="btnSaveSingleCust" onclick="submitSingleCustomer()" style="margin-top: 8px;">
           ${isEdit ? '💾 حفظ التعديلات' : '✅ حفظ الزبون'}
         </button>
       `;
@@ -1866,11 +2105,11 @@ function renderModalBody() {
     case 'backup':
       return `
         <div class="modal-head">
-          <div class="modal-title">💾 النسخ الاحتياطي للبيانات</div>
+          <div class="modal-title">💾 النسخ الاحتياطي وتصدير الملفات</div>
           <button class="modal-close" type="button" onclick="closeModal()">✕</button>
         </div>
         <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.5;">
-          حفظ نسخة كاملة من كل الزباين والأسابيع:
+          يمكنك تحميل نسخة من ملفات الزباين والحسابات بتنسيق واضح ومفهوم:
         </div>
         <button class="btn btn-success" type="button" onclick="downloadBackupJSON()" style="margin-bottom: 8px;">
           ⬇️ تحميل ملف النسخة الاحتياطية (JSON)
@@ -1884,9 +2123,25 @@ function renderModalBody() {
   }
 }
 
-function openModal(m) { S.modal = m; render(); }
-function closeModal() { S.modal = null; S.editId = null; render(); }
-function closeConfirm() { S.confirm = null; render(); }
+function openModal(m) {
+  S.modal = m;
+  render();
+  setTimeout(() => {
+    const inp = document.getElementById('singleCustName');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function closeModal() {
+  S.modal = null;
+  S.editId = null;
+  render();
+}
+
+function closeConfirm() {
+  S.confirm = null;
+  render();
+}
 
 function addHalfToInput(id) {
   const inp = document.getElementById(id);
@@ -1951,32 +2206,37 @@ function parseFastPaste() {
 }
 
 function submitBulkRows() {
-  syncCurrentBulkRowsFromDOM();
-  const valid = S.bulkRows.filter(r => r.name.trim().length > 0);
-  if (!valid.length) {
-    showToast('⚠️ يرجى كتابة اسم زبون واحد على الأقل', 'warn');
-    return;
-  }
+  try {
+    syncCurrentBulkRowsFromDOM();
+    const valid = S.bulkRows.filter(r => r.name.trim().length > 0);
+    if (!valid.length) {
+      showToast('⚠️ يرجى كتابة اسم زبون واحد على الأقل', 'warn');
+      return;
+    }
 
-  let count = 0;
-  valid.forEach(r => {
-    const cowPrice = parseFloat(r.cow) || 0;
-    const bufPrice = parseFloat(r.buf) || 0;
-    S.customers.push({
-      id: uid(),
-      name: r.name.trim(),
-      cow: cowPrice > 0 ? cowPrice : 0,
-      buffOn: bufPrice > 0,
-      buff: bufPrice > 0 ? bufPrice : 0,
-      addedAt: S.date
+    let count = 0;
+    valid.forEach(r => {
+      const cowPrice = parseFloat(r.cow) || 0;
+      const bufPrice = parseFloat(r.buf) || 0;
+      S.customers.push({
+        id: uid(),
+        name: r.name.trim(),
+        cow: cowPrice > 0 ? cowPrice : 0,
+        buffOn: bufPrice > 0,
+        buff: bufPrice > 0 ? bufPrice : 0,
+        addedAt: S.date
+      });
+      count++;
     });
-    count++;
-  });
 
-  S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-  saveCustomers();
-  closeModal();
-  showToast(`✅ تمت إضافة ${count} زبون بنجاح وكل زبون مسجل لوحده!`, 'ok');
+    S.customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+    saveCustomers();
+    closeModal();
+    showToast(`✅ تمت إضافة ${count} زبون بنجاح وكل زبون مسجل لوحده!`, 'ok');
+  } catch (err) {
+    console.error('Error adding bulk customers:', err);
+    showToast('❌ حدث خطأ أثناء الحفظ: ' + err.message, 'err');
+  }
 }
 
 function openEditModal(id) {
@@ -1986,44 +2246,51 @@ function openEditModal(id) {
 }
 
 function submitSingleCustomer() {
-  const nameEl = document.getElementById('singleCustName');
-  const cowEl = document.getElementById('singleCustCow');
-  const bufEl = document.getElementById('singleCustBuf');
+  try {
+    const nameEl = document.getElementById('singleCustName');
+    const cowEl = document.getElementById('singleCustCow');
+    const bufEl = document.getElementById('singleCustBuf');
 
-  const name = nameEl ? nameEl.value.trim() : '';
-  const cow = cowEl && cowEl.value ? parseFloat(cowEl.value) : 0;
-  const buf = bufEl && bufEl.value ? parseFloat(bufEl.value) : 0;
+    const name = nameEl ? nameEl.value.trim() : '';
+    const cow = cowEl && cowEl.value ? parseFloat(cowEl.value) : 0;
+    const buf = bufEl && bufEl.value ? parseFloat(bufEl.value) : 0;
 
-  if (!name) {
-    showToast('❌ أدخل اسم الزبون', 'err');
-    return;
-  }
-
-  if (S.modal === 'edit' && S.editId) {
-    const idx = S.customers.findIndex(c => c.id === S.editId);
-    if (idx !== -1) {
-      S.customers[idx].name = name;
-      S.customers[idx].cow = cow;
-      S.customers[idx].buffOn = buf > 0;
-      S.customers[idx].buff = buf;
-      saveCustomers();
-      showToast('✅ تم تعديل بيانات الزبون بنجاح', 'ok');
+    if (!name) {
+      showToast('❌ أدخل اسم الزبون', 'err');
+      if (nameEl) nameEl.focus();
+      return;
     }
-  } else {
-    S.customers.push({
-      id: uid(),
-      name,
-      cow,
-      buffOn: buf > 0,
-      buff,
-      addedAt: S.date
-    });
-    S.customers.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-    saveCustomers();
-    showToast('✅ تم حفظ الزبون الجديد بنجاح', 'ok');
-  }
 
-  closeModal();
+    if (S.modal === 'edit' && S.editId) {
+      const idx = S.customers.findIndex(c => c.id === S.editId);
+      if (idx !== -1) {
+        S.customers[idx].name = name;
+        S.customers[idx].cow = cow;
+        S.customers[idx].buffOn = buf > 0;
+        S.customers[idx].buff = buf;
+        saveCustomers();
+        showToast('✅ تم تعديل بيانات الزبون بنجاح', 'ok');
+      }
+    } else {
+      const newCust = {
+        id: uid(),
+        name: name,
+        cow: cow,
+        buffOn: buf > 0,
+        buff: buf,
+        addedAt: S.date
+      };
+      S.customers.push(newCust);
+      S.customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+      saveCustomers();
+      showToast('✅ تم حفظ الزبون الجديد بنجاح', 'ok');
+    }
+
+    closeModal();
+  } catch (err) {
+    console.error('Error saving single customer:', err);
+    showToast('❌ حدث خطأ أثناء الحفظ: ' + err.message, 'err');
+  }
 }
 
 function confirmDeleteCustomer(id) {
@@ -2188,7 +2455,7 @@ function exportWeekCSV() {
 
 function downloadBackupJSON() {
   const data = {
-    version: '6.0',
+    version: '7.0',
     cycle: 'ThursdayToWednesday',
     customers: S.customers,
     week: S.week,
@@ -2242,20 +2509,13 @@ function showToast(msg, type = '') {
   _tTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
 }
 
-// PWA Offline Service Worker
+// ══════════════════════════════════════════════════════════════════════════
+//  SERVICE WORKER REGISTRATION (FOR PWABUILDER 100% SCORE)
+// ══════════════════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  const swCode = `
-    const C='aby-dairy-v6';
-    self.addEventListener('install', e => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => {
-      if(e.request.method!=='GET') return;
-      e.respondWith(caches.open(C).then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok)c.put(e.request,res.clone());return res;}).catch(()=>r))));
-    });
-  `;
-  try {
-    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], { type: 'text/javascript' }))).catch(()=>{});
-  } catch(e){}
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
 }
 
 async function start() {
