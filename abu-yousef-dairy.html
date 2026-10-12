@@ -11,8 +11,11 @@
 <meta name="application-name" content="أبو يوسف للألبان">
 <title>أبو يوسف للألبان - إدارة وتوريد الألبان</title>
 <link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="shortcut icon" href="./favicon.ico">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -137,6 +140,16 @@ html, body {
   background: rgba(5, 150, 105, 0.4);
   border-color: #6ee7b7;
   color: #a7f3d0;
+}
+.header-btn.folder-reconnect {
+  background: rgba(217, 119, 6, 0.4);
+  border-color: #fcd34d;
+  color: #fef08a;
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
 }
 
 /* ─── FOLDER STATUS BANNER ─── */
@@ -856,7 +869,8 @@ let S = {
   bulkRows: [],
   calMonth: new Date().getMonth(),
   calYear: new Date().getFullYear(),
-  folderHandle: null
+  folderHandle: null,
+  hasSavedHandle: false
 };
 
 function localSet(key, val) {
@@ -912,12 +926,30 @@ async function initFolder() {
   try {
     const handle = await dbGetMeta('folderHandle');
     if (handle) {
+      S.hasSavedHandle = true;
       const perm = await handle.queryPermission({ mode: 'readwrite' });
       if (perm === 'granted') {
         S.folderHandle = handle;
       }
     }
   } catch(e) {}
+}
+
+async function reconnectFolder() {
+  try {
+    const handle = await dbGetMeta('folderHandle');
+    if (handle) {
+      const perm = await handle.requestPermission({ mode: 'readwrite' });
+      if (perm === 'granted') {
+        S.folderHandle = handle;
+        showToast('📁 تم تأكيد الإذن للمجلد بنجاح! جاري المزامنة...', 'ok');
+        await syncAllFilesToDisk();
+        render();
+        return;
+      }
+    }
+  } catch(e) {}
+  pickFolder();
 }
 
 async function pickFolder() {
@@ -928,6 +960,7 @@ async function pickFolder() {
   try {
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
     S.folderHandle = handle;
+    S.hasSavedHandle = true;
     await dbPutMeta('folderHandle', handle);
     showToast('📁 تم ربط المجلد بنجاح! سيتم حفظ الملفات تلقائياً فيه.', 'ok');
     await syncAllFilesToDisk();
@@ -1064,25 +1097,10 @@ async function loadData() {
   await initFolder();
 
   let custs = localGet('customers');
-  if (!custs || !custs.length) {
-    try {
-      const res = await fetch('customers.json');
-      if (res.ok) {
-        const json = await res.json();
-        if (json.قائمة_الزباين) {
-          custs = json.قائمة_الزباين.map(c => ({
-            id: uid(),
-            name: c.اسم_الزبون,
-            cow: c.سعر_لبن_البقر_ج_م || 0,
-            buffOn: !!c.يجلب_لبن_جاموس,
-            buff: c.سعر_لبن_الجاموس_ج_م || 0,
-            addedAt: c.تاريخ_التسجيل
-          }));
-        } else if (json.customers) {
-          custs = json.customers;
-        }
-      }
-    } catch (e) {}
+  if (custs === null) {
+    // جهاز جديد أو أول فتح خالص: نبدأ بقائمة فارغة محلية للجهاز
+    custs = [];
+    localSet('customers', custs);
   }
   S.customers = custs || [];
   S.customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
@@ -1174,8 +1192,8 @@ function renderHeaderHTML() {
           </div>
         </div>
         <div class="header-actions">
-          <button class="header-btn ${hasFolder ? 'folder-connected' : ''}" type="button" onclick="pickFolder()" title="ربط مجلد الحفظ على الكمبيوتر">
-            <span>${hasFolder ? '📁 متصل' : '📁 ربط مجلد'}</span>
+          <button class="header-btn ${hasFolder ? 'folder-connected' : (S.hasSavedHandle ? 'folder-reconnect' : '')}" type="button" onclick="${hasFolder ? 'pickFolder()' : (S.hasSavedHandle ? 'reconnectFolder()' : 'pickFolder()')}" title="ربط مجلد الحفظ على الكمبيوتر">
+            <span>${hasFolder ? '📁 متصل' : (S.hasSavedHandle ? '⚡ تفعيل المجلد' : '📁 ربط مجلد')}</span>
           </button>
           <button class="header-btn" type="button" onclick="openCalendarPicker()">📅 التقويم</button>
           <button class="header-btn" type="button" onclick="goView('settings')">⚙️</button>
@@ -1240,12 +1258,18 @@ function renderHomeView(container) {
 
   container.innerHTML = `
     ${!S.folderHandle ? `
-      <div style="background: #eff6ff; border: 1.5px dashed var(--blue); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="background: ${S.hasSavedHandle ? '#fef3c7' : '#eff6ff'}; border: 1.5px dashed ${S.hasSavedHandle ? 'var(--amber)' : 'var(--blue)'}; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
         <div>
-          <div style="font-size: 12px; font-weight: 800; color: var(--navy);">📁 حفظ الملفات في مجلد جهازك تلقائياً</div>
-          <div style="font-size: 10px; color: var(--muted);">اربط مجلد العمل ليتم حفظ كشوفات الزباين وملفات JSON فيها فوراً</div>
+          <div style="font-size: 12px; font-weight: 800; color: var(--navy);">
+            ${S.hasSavedHandle ? '⚠️ اضغط لتفعيل حفظ المجلد (بعد التحديث)' : '📁 ربط مجلد الحفظ على جهازك'}
+          </div>
+          <div style="font-size: 10px; color: var(--muted);">
+            ${S.hasSavedHandle ? 'اضغط ضغطة واحدة لتأكيد اتصال المجلد وحفظ الملفات فيه فوراً' : 'اختر مجلد العمل ليتم حفظ كشوفات الزباين وملفات JSON فيه تلقائياً'}
+          </div>
         </div>
-        <button class="btn btn-primary btn-sm" type="button" onclick="pickFolder()" style="width: auto;">ربط المجلد الآن</button>
+        <button class="btn ${S.hasSavedHandle ? 'btn-amber' : 'btn-primary'} btn-sm" type="button" onclick="${S.hasSavedHandle ? 'reconnectFolder()' : 'pickFolder()'}" style="width: auto; white-space: nowrap;">
+          ${S.hasSavedHandle ? '⚡ تفعيل المجلد' : 'ربط المجلد الآن'}
+        </button>
       </div>
     ` : ''}
 
@@ -1826,13 +1850,22 @@ function renderSettingsView(container) {
       <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 12px; line-height: 1.6;">
         ${hasFolder ? `
           ✅ المجلد متصل بنجاح على جهازك! كل زبون يُضاف وكل كيلو يُسجل يتم حفظه فوراً في ملفات منسقة ومفهومة (customers.json و week-....json).
+        ` : (S.hasSavedHandle ? `
+          ⚠️ تم ربط المجلد مسبقاً، ولكن نظام الأمان في المتصفح يحتاج تأكيد الإذن بضغطة واحدة بعد التحديث ليتمكن من الكتابة في المجلد.
         ` : `
           اضغط أدناه لاختيار مجلد المشروع على جهازك (مثل D:\\الشغل\\dad). سيقوم التطبيق بحفظ ملفات الزباين وكشوفات الحسابات تلقائياً داخل المجلد بشكل منسق ومفهوم.
-        `}
+        `)}
       </div>
-      <button class="btn ${hasFolder ? 'btn-outline' : 'btn-primary'}" type="button" onclick="pickFolder()">
-        <span>📁</span> ${hasFolder ? 'تغيير المجلد المتصل' : 'اختيار وربط مجلد الحفظ'}
-      </button>
+      <div style="display: flex; gap: 8px;">
+        ${!hasFolder && S.hasSavedHandle ? `
+          <button class="btn btn-amber" type="button" onclick="reconnectFolder()" style="flex: 1;">
+            <span>⚡</span> تفعيل المجلد السابق بضغطة واحدة
+          </button>
+        ` : ''}
+        <button class="btn ${hasFolder ? 'btn-outline' : 'btn-primary'}" type="button" onclick="pickFolder()" style="flex: 1;">
+          <span>📁</span> ${hasFolder ? 'تغيير المجلد المتصل' : 'اختيار مجلد جديد'}
+        </button>
+      </div>
     </div>
 
     <div class="card">
