@@ -1,11 +1,13 @@
-const CACHE_NAME = 'abo-yosef-pwa-v2';
+const CACHE_NAME = 'abo-yosef-pwa-v3';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './abu-yousef-dairy.html',
   './manifest.json',
+  './favicon.ico',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './android-chrome-512x512.png'
 ];
 
 self.addEventListener('install', event => {
