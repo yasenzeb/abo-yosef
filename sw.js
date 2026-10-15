@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abo-yosef-pwa-v4';
+const CACHE_NAME = 'abo-yosef-pwa-v5';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -10,8 +10,9 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
   );
 });
 
@@ -23,23 +24,41 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Network-First for HTML/navigation so every device always gets the latest version immediately
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const isHtml = event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
+
+  if (isHtml) {
+    event.respondWith(
+      fetch(event.request).then(resp => {
+        if (resp && resp.status === 200) {
+          const clone = resp.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return resp;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for static assets
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(resp => {
+      const fetchPromise = fetch(event.request).then(resp => {
         if (resp && resp.status === 200 && event.request.url.startsWith('http')) {
           const clone = resp.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return resp;
       }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
 
-// Notify clients about new version
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

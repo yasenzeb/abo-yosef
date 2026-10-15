@@ -2389,6 +2389,16 @@ function renderSettingsView(container) {
     </div>
 
     <div class="card">
+      <div class="card-title">🔄 تحديث وترقية التطبيق</div>
+      <div style="font-size: 12px; color: var(--ink-secondary); margin-bottom: 10px; line-height: 1.6;">
+        إذا كنت تستخدم التطبيق من جهاز آخر أو هاتف وتريد جلب وتطبيق آخر التعديلات فوراً دون المساس بالبيانات المحفوظة:
+      </div>
+      <button class="btn btn-primary" type="button" onclick="forceCheckAndApplyUpdate()">
+        <span>⚡</span> فحص وتثبيت آخر تحديث فوراً
+      </button>
+    </div>
+
+    <div class="card">
       <div class="card-title">📱 جاهز للتحويل إلى تطبيق عبر PWABuilder</div>
       <div style="font-size: 12px; color: var(--ink-secondary); line-height: 1.7;">
         • تم تضمين ملف <code>manifest.json</code> و <code>sw.js</code> والأيقونات عالية الدقة 192px و 512px.<br>
@@ -3182,7 +3192,21 @@ function showToast(msg, type = '') {
 let newWorker;
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
+    navigator.serviceWorker.register('./sw.js?v=5').then(reg => {
+      // فحص فوري للتحديثات من السيرفر
+      reg.update().catch(() => {});
+
+      // فحص عند عودة المستخدم للتطبيق
+      window.addEventListener('focus', () => {
+        reg.update().catch(() => {});
+      });
+
+      // إذا كان هناك عامل خدمة ينتظر بالفعل، إشعار المستخدم فوراً
+      if (reg.waiting) {
+        newWorker = reg.waiting;
+        showUpdateBanner();
+      }
+
       reg.addEventListener('updatefound', () => {
         newWorker = reg.installing;
         if (newWorker) {
@@ -3210,14 +3234,14 @@ function showUpdateBanner() {
   if (existing) return;
   const banner = document.createElement('div');
   banner.id = 'updateNotificationBanner';
-  banner.style.cssText = 'position:fixed; top:12px; left:14px; right:14px; max-width:572px; margin:0 auto; z-index:9999; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 10px 25px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:space-between; gap:10px; animation:slideDown 0.3s ease;';
+  banner.style.cssText = 'position:fixed; top:12px; left:14px; right:14px; max-width:572px; margin:0 auto; z-index:9999; background:linear-gradient(135deg, #059669, #047857); color:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 10px 25px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:space-between; gap:10px; animation:slideDown 0.3s ease;';
   banner.innerHTML = `
     <div>
-      <div style="font-weight:800; font-size:13px;">🆕 يتوفر تحديث جديد للتطبيق!</div>
-      <div style="font-size:11px; opacity:0.9;">اضغط لتطبيق التحديث فوراً دون التأثير على بياناتك</div>
+      <div style="font-weight:900; font-size:13px;">⚡ يتوفر تحديث جديد فوري للتطبيق!</div>
+      <div style="font-size:11px; opacity:0.95;">اضغط هنا لتطبيق آخر الميزات فوراً وبأمان</div>
     </div>
-    <button class="btn btn-sm" style="background:#fff; color:var(--blue); font-weight:800; white-space:nowrap; padding:6px 12px;" onclick="applyAppUpdate()">
-      تحديث الآن ⚡
+    <button class="btn btn-sm" style="background:#fff; color:#047857; font-weight:900; white-space:nowrap; padding:6px 14px; border:none; border-radius:8px; cursor:pointer;" onclick="applyAppUpdate()">
+      تحديث الآن 🚀
     </button>
   `;
   document.body.appendChild(banner);
@@ -3226,9 +3250,43 @@ function showUpdateBanner() {
 function applyAppUpdate() {
   if (newWorker) {
     newWorker.postMessage({ type: 'SKIP_WAITING' });
+  } else if (navigator.serviceWorker) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg && reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      } else {
+        window.location.reload();
+      }
+    });
   } else {
     window.location.reload();
   }
+}
+
+async function forceCheckAndApplyUpdate() {
+  showToast('🔄 جاري فحص وتنزيل أحدث نسخة من التطبيق...', 'ok');
+  if ('serviceWorker' in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg) {
+        await reg.update();
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          return;
+        }
+      }
+    } catch (e) {}
+  }
+  // مسح كاش المتصفح القديم وإعادة التحميل النظيف
+  if ('caches' in window) {
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    } catch(e) {}
+  }
+  setTimeout(() => {
+    window.location.href = window.location.pathname + '?v=' + Date.now();
+  }, 500);
 }
 
 async function start() {
