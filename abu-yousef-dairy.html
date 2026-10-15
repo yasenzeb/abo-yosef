@@ -870,7 +870,9 @@ let S = {
   calMonth: new Date().getMonth(),
   calYear: new Date().getFullYear(),
   folderHandle: null,
-  hasSavedHandle: false
+  hasSavedHandle: false,
+  dailyFilterMode: 'next', // 'all' (الكل) | 'next' (عليه الدور) | 'collected' (تم جمعه) | 'uncollected' (لسه متجمعش)
+  factoryPrice: localGet('factory_price') || 0
 };
 
 function localSet(key, val) {
@@ -1137,6 +1139,8 @@ async function loadData() {
   S.week = weekData;
 
   S.history = localGet('history') || [];
+  S.dailyFilterMode = localGet('daily_filter_mode') || 'next';
+  S.factoryPrice = localGet('factory_price') || 0;
 }
 
 function saveCustomers() {
@@ -1166,19 +1170,33 @@ function calcCustomerWeek(cust, week) {
   const bufRate = cust.buff || 0;
   const cowAmt = cowKg * cowRate;
   const bufAmt = bufKg * bufRate;
+  const rawMilkTotal = cowAmt + bufAmt;
   
-  let adjTotal = 0;
+  let loansTotal = 0; // سلف وخصومات
+  let bonusTotal = 0; // زيادات ومكافآت
+  let notesList = [];
+
   if (cust.adjustments && cust.adjustments.length) {
     cust.adjustments.forEach(a => {
       if (days.includes(a.date)) {
-        adjTotal += a.type === 'add' ? (parseFloat(a.amount) || 0) : -(parseFloat(a.amount) || 0);
+        const amt = parseFloat(a.amount) || 0;
+        if (a.type === 'sub') {
+          loansTotal += amt;
+          if (a.note) notesList.push(`خصم: ${a.note} (${amt}ج)`);
+          else notesList.push(`سلفة: ${amt}ج`);
+        } else {
+          bonusTotal += amt;
+          if (a.note) notesList.push(`زيادة: ${a.note} (${amt}ج)`);
+          else notesList.push(`زيادة: ${amt}ج`);
+        }
       }
     });
   }
 
-  const total = Math.max(0, cowAmt + bufAmt + adjTotal);
+  const adjTotal = bonusTotal - loansTotal;
+  const total = Math.max(0, rawMilkTotal + adjTotal);
 
-  return { cowKg, bufKg, totalKg: cowKg + bufKg, cowAmt, bufAmt, adjTotal, total };
+  return { cowKg, bufKg, totalKg: cowKg + bufKg, cowAmt, bufAmt, rawMilkTotal, loansTotal, bonusTotal, adjTotal, notesList, total };
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -1240,12 +1258,14 @@ function renderFactoryView(container) {
   const days = getCycleDays(w.ws);
   if (!w.factoryEntries) w.factoryEntries = {};
 
+  const defaultPrice = S.factoryPrice || 0;
+
   let totalKg = 0;
   let totalMoney = 0;
   days.forEach(d => {
     const entry = w.factoryEntries[d] || {};
     const kg = parseFloat(entry.qty) || 0;
-    const price = parseFloat(entry.price) || 0;
+    const price = (entry.price !== undefined && entry.price !== '') ? (parseFloat(entry.price) || 0) : defaultPrice;
     totalKg += kg;
     totalMoney += (kg * price);
   });
@@ -1264,7 +1284,7 @@ function renderFactoryView(container) {
         </span>
       </div>
 
-      <div class="stats-grid" style="margin-bottom: 6px;">
+      <div class="stats-grid" style="margin-bottom: 8px;">
         <div class="stat-card">
           <div class="stat-value">${totalKg.toFixed(1)} <small style="font-size:11px">كجم</small></div>
           <div class="stat-label">إجمالي المورد للمعمل هذا الأسبوع</div>
@@ -1274,14 +1294,37 @@ function renderFactoryView(container) {
           <div class="stat-label">إجمالي مستحقاتك من المعمل</div>
         </div>
       </div>
+
+      <div style="background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-top: 4px;">
+        <div style="font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 4px;">
+          🏷️ سعر استلام المعمل الثابت لجميع الأيام:
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+          يحدد مرة واحدة ويطبق تلقائياً على كل أيام الأسبوع، ويمكن تغييره في أي وقت:
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input 
+            type="number" 
+            step="any" 
+            class="form-ctl" 
+            id="globalFactoryPriceInput" 
+            placeholder="سعر الكيلو للمعمل (مثال: 32)" 
+            value="${defaultPrice > 0 ? defaultPrice : ''}"
+            style="font-size: 15px; font-weight: 800; text-align: center;"
+          >
+          <button class="btn btn-primary" type="button" style="width: auto; white-space: nowrap; padding: 8px 14px;" onclick="updateGlobalFactoryPrice()">
+            💾 حفظ السعر وتطبيقه
+          </button>
+        </div>
+      </div>
     </div>
 
     <div style="margin-bottom: 8px;">
       <div style="font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px;">
-        📅 تسجيل توريد كل يوم للمعمل وسعر الاستلام:
+        📅 تسجيل كميات التوريد اليومية:
       </div>
       <div style="font-size: 11px; color: var(--muted);">
-        سجل الكمية وسعر الكيلو لكل يوم من أيام دورة الأسبوع:
+        أدخل كمية اللبن المسلمة للمعمل كل يوم (السعر ينزل تلقائياً من السعر الثابت أعلاه):
       </div>
     </div>
 
@@ -1289,9 +1332,9 @@ function renderFactoryView(container) {
       ${days.map((d, idx) => {
         const entry = w.factoryEntries[d] || {};
         const qty = entry.qty !== undefined ? entry.qty : '';
-        const price = entry.price !== undefined ? entry.price : '';
+        const dayPrice = (entry.price !== undefined && entry.price !== '') ? entry.price : (defaultPrice > 0 ? defaultPrice : '');
         const isPayout = idx === 6;
-        const subTotal = (parseFloat(qty) || 0) * (parseFloat(price) || 0);
+        const subTotal = (parseFloat(qty) || 0) * (parseFloat(dayPrice) || 0);
 
         return `
           <div class="daily-card" style="${isPayout ? 'border-color: #a7f3d0; background: #fafdfc;' : ''}">
@@ -1319,13 +1362,13 @@ function renderFactoryView(container) {
                 >
               </div>
               <div style="flex: 1;">
-                <label style="font-size: 10px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 2px;">سعر المعمل (ج.م):</label>
+                <label style="font-size: 10px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 2px;">سعر اليوم (ج.م):</label>
                 <input 
                   class="form-ctl" 
                   type="number" 
                   step="any" 
-                  placeholder="السعر" 
-                  value="${price}" 
+                  placeholder="${defaultPrice > 0 ? defaultPrice : 'السعر'}" 
+                  value="${entry.price !== undefined ? entry.price : ''}" 
                   oninput="handleFactoryInput('${d}', 'price', this.value)"
                   style="text-align: center; font-weight: 800;"
                 >
@@ -1342,6 +1385,15 @@ function renderFactoryView(container) {
       </button>
     </div>
   `;
+}
+
+function updateGlobalFactoryPrice() {
+  const inp = document.getElementById('globalFactoryPriceInput');
+  const price = inp ? parseFloat(inp.value) || 0 : 0;
+  S.factoryPrice = price;
+  localSet('factory_price', price);
+  showToast(`✅ تم تحديد سعر المعمل الثابت: ${price} ج.م/كجم لجميع الأيام`, 'ok');
+  renderFactoryView(document.getElementById('mainContainer'));
 }
 
 function handleFactoryInput(dateStr, field, val) {
@@ -1592,11 +1644,47 @@ function renderDailyView(container) {
       }).join('')}
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
       <h2 style="font-size: 14px; font-weight: 800; color: var(--navy);">
         📝 تسجيل كميات يوم: ${getDayNameAr(curDate)} (${formatDateAr(curDate)})
       </h2>
       <span style="font-size: 11px; color: var(--muted); font-weight: 700;">${list.length} زبون</span>
+    </div>
+
+    <!-- فلتر العرض الذكي المطلوب -->
+    <div style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; scrollbar-width: none;">
+      <button 
+        type="button" 
+        class="btn btn-sm ${S.dailyFilterMode === 'next' ? 'btn-primary' : 'btn-outline'}" 
+        style="width: auto; padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 20px;"
+        onclick="setDailyFilterMode('next')"
+      >
+        🎯 اللي عليه الدور بس
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-sm ${S.dailyFilterMode === 'uncollected' ? 'btn-primary' : 'btn-outline'}" 
+        style="width: auto; padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 20px;"
+        onclick="setDailyFilterMode('uncollected')"
+      >
+        ⏳ اللي لسه متجمعش
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-sm ${S.dailyFilterMode === 'collected' ? 'btn-primary' : 'btn-outline'}" 
+        style="width: auto; padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 20px;"
+        onclick="setDailyFilterMode('collected')"
+      >
+        ✅ اللي تم جمعه بس
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-sm ${S.dailyFilterMode === 'all' ? 'btn-primary' : 'btn-outline'}" 
+        style="width: auto; padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 20px;"
+        onclick="setDailyFilterMode('all')"
+      >
+        👥 إظهار جميع الزبائن
+      </button>
     </div>
 
     <div class="search-wrap">
@@ -1616,6 +1704,9 @@ function renderDailyView(container) {
       </button>
     </div>
   `;
+
+  // تطبيق حالة الفلتر المختارة فوراً على البطاقات (حتى عند الخروج والدخول مجدداً)
+  setTimeout(updateDailyCardsVisibility, 10);
 }
 
 function renderDailyCustomerCard(cust, dateStr, week) {
@@ -1723,18 +1814,85 @@ function handleMilkInput(custId) {
   saveWeek();
 }
 
+function setDailyFilterMode(mode) {
+  S.dailyFilterMode = mode;
+  localSet('daily_filter_mode', mode);
+  updateDailyCardsVisibility();
+  // تحديث حالة الأزرار
+  const container = document.getElementById('mainContainer');
+  if (container) renderDailyView(container);
+}
+
+function hasCustomerRecordedToday(custId, dateStr, week) {
+  const e = (week.entries[custId] || {})[dateStr] || {};
+  return (e.cow !== undefined && e.cow > 0) || (e.buf !== undefined && e.buf > 0);
+}
+
+function updateDailyCardsVisibility() {
+  const mode = S.dailyFilterMode || 'next';
+  const query = (S.searchQueryDaily || '').trim().toLowerCase();
+  const curDate = S.date;
+  const w = S.week;
+
+  let firstUncollectedFound = false;
+
+  S.customers.forEach(c => {
+    const card = document.getElementById(`card-${c.id}`);
+    if (!card) return;
+
+    const nameMatch = !query || c.name.toLowerCase().includes(query);
+    const recorded = hasCustomerRecordedToday(c.id, curDate, w);
+
+    let modeMatch = true;
+    if (mode === 'collected') {
+      modeMatch = recorded;
+    } else if (mode === 'uncollected') {
+      modeMatch = !recorded;
+    } else if (mode === 'next') {
+      // اللي عليه الدور بس: أول واحد لسه متجمعش
+      if (!recorded && !firstUncollectedFound) {
+        modeMatch = true;
+        firstUncollectedFound = true;
+      } else {
+        modeMatch = false;
+      }
+    } else if (mode === 'all') {
+      modeMatch = true;
+    }
+
+    card.style.display = (nameMatch && modeMatch) ? '' : 'none';
+  });
+}
+
 function focusNextCustomer(currentCustId) {
   handleMilkInput(currentCustId);
-  const visibleCards = Array.from(document.querySelectorAll('#dailyCardsList .daily-card'))
-    .filter(c => c.style.display !== 'none');
-  const currentIndex = visibleCards.findIndex(c => c.id === `card-${currentCustId}`);
-  if (currentIndex !== -1 && currentIndex < visibleCards.length - 1) {
-    const nextCard = visibleCards[currentIndex + 1];
-    nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    const nextInput = nextCard.querySelector('.qty-input');
-    if (nextInput) nextInput.focus();
+  const curDate = S.date;
+  const w = S.week;
+
+  if (S.dailyFilterMode === 'next') {
+    // في وضع "اللي عليه الدور": الزبون المسجل يختفي فوراً ويظهر التالي
+    updateDailyCardsVisibility();
+    const nextCard = document.querySelector('#dailyCardsList .daily-card:not([style*="display: none"])');
+    if (nextCard) {
+      nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const nextInput = nextCard.querySelector('.qty-input');
+      if (nextInput) nextInput.focus();
+    } else {
+      showToast('🎉 ممتاز! تم جمع اللبن من جميع الزبائن لهذا اليوم!', 'ok');
+    }
   } else {
-    showToast('✅ تم الوصول لآخر زبون في القائمة اليوم', 'ok');
+    // الأوضاع الأخرى: انتقال سلس للبطاقة المرئية التالية
+    const visibleCards = Array.from(document.querySelectorAll('#dailyCardsList .daily-card'))
+      .filter(c => c.style.display !== 'none');
+    const currentIndex = visibleCards.findIndex(c => c.id === `card-${currentCustId}`);
+    if (currentIndex !== -1 && currentIndex < visibleCards.length - 1) {
+      const nextCard = visibleCards[currentIndex + 1];
+      nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const nextInput = nextCard.querySelector('.qty-input');
+      if (nextInput) nextInput.focus();
+    } else {
+      showToast('✅ تم الوصول لآخر زبون في القائمة اليوم', 'ok');
+    }
   }
 }
 
@@ -1751,19 +1909,7 @@ function selectDailyDate(d) {
 
 function handleSearchDaily(q) {
   S.searchQueryDaily = q;
-  const listEl = document.getElementById('dailyCardsList');
-  if (!listEl) {
-    renderDailyView(document.getElementById('mainContainer'));
-    return;
-  }
-  const query = q.trim().toLowerCase();
-  S.customers.forEach(c => {
-    const card = document.getElementById(`card-${c.id}`);
-    if (card) {
-      const match = !query || c.name.toLowerCase().includes(query);
-      card.style.display = match ? '' : 'none';
-    }
-  });
+  updateDailyCardsVisibility();
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -1928,10 +2074,22 @@ function renderReportsView(container) {
           </div>
 
           <div style="text-align: left; margin-left: 8px;">
-            <div style="font-size: 16px; font-weight: 900; color: var(--green);">
-              ${r.total.toFixed(2)} <span style="font-size: 10px; font-weight: normal;">ج.م</span>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+              <div style="font-size: 16px; font-weight: 900; color: var(--green);">
+                ${r.total.toFixed(2)} <span style="font-size: 10px; font-weight: normal;">ج.م</span>
+              </div>
+              ${r.loansTotal > 0 ? `
+                <div style="font-size: 10px; font-weight: 800; color: var(--red); background: var(--red-soft); padding: 1px 6px; border-radius: 4px; margin-top: 2px;">
+                  ⚠️ مخصوم سلفة: ${r.loansTotal} ج.م
+                </div>
+              ` : ''}
+              ${r.bonusTotal > 0 ? `
+                <div style="font-size: 10px; font-weight: 800; color: var(--blue); background: var(--blue-soft); padding: 1px 6px; border-radius: 4px; margin-top: 2px;">
+                  ➕ مضاف زيادة: ${r.bonusTotal} ج.م
+                </div>
+              ` : ''}
             </div>
-            <div style="display: flex; gap: 4px; margin-top: 4px;">
+            <div style="display: flex; gap: 4px; margin-top: 4px; justify-content: flex-end;">
               <button 
                 class="btn btn-sm" 
                 type="button"
