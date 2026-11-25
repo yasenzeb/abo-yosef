@@ -889,17 +889,29 @@ function localGet(key) {
 // ══════════════════════════════════════════════════════════════════════════
 //  INDEXED DB & REAL HARD DRIVE FOLDER SYNC (حفظ في الفولدر المحدد)
 // ══════════════════════════════════════════════════════════════════════════
-let _db;
+let _db = null;
 function idb() {
-  return new Promise((res, rej) => {
-    const r = indexedDB.open('AbyDairyMainDB', 1);
-    r.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
-      if (!d.objectStoreNames.contains('customers')) d.createObjectStore('customers', { keyPath: 'id' });
-    };
-    r.onsuccess = e => { _db = e.target.result; res(); };
-    r.onerror = rej;
+  return new Promise(res => {
+    if (!('indexedDB' in window)) { res(null); return; }
+    let done = false;
+    const finish = () => { if (!done) { done = true; res(_db); } };
+    const timer = setTimeout(finish, 800);
+    try {
+      const r = indexedDB.open('AbyDairyMainDB', 1);
+      r.onupgradeneeded = e => {
+        try {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
+          if (!d.objectStoreNames.contains('customers')) d.createObjectStore('customers', { keyPath: 'id' });
+        } catch (err) {}
+      };
+      r.onsuccess = e => { clearTimeout(timer); _db = e.target.result; finish(); };
+      r.onerror = () => { clearTimeout(timer); finish(); };
+      r.onblocked = () => { clearTimeout(timer); finish(); };
+    } catch (e) {
+      clearTimeout(timer);
+      finish();
+    }
   });
 }
 
@@ -926,11 +938,18 @@ function dbGetMeta(key) {
 }
 
 async function initFolder() {
+  if (!_db) return;
   try {
-    const handle = await dbGetMeta('folderHandle');
+    const handle = await Promise.race([
+      dbGetMeta('folderHandle'),
+      new Promise(r => setTimeout(() => r(null), 500))
+    ]);
     if (handle) {
       S.hasSavedHandle = true;
-      const perm = await handle.queryPermission({ mode: 'readwrite' });
+      const perm = await Promise.race([
+        handle.queryPermission({ mode: 'readwrite' }),
+        new Promise(r => setTimeout(() => r('prompt'), 500))
+      ]);
       if (perm === 'granted') {
         S.folderHandle = handle;
       }
@@ -1132,11 +1151,13 @@ async function loadData() {
   S.currentWs = thurStart;
 
   let weekData = localGet('week_' + thurStart);
-  if (!weekData) {
-    weekData = { ws: thurStart, entries: {}, paid: {}, closed: false };
+  if (!weekData || typeof weekData !== 'object') {
+    weekData = { ws: thurStart, entries: {}, paid: {}, factoryEntries: {}, closed: false };
     localSet('week_' + thurStart, weekData);
   }
+  if (!weekData.entries) weekData.entries = {};
   if (!weekData.paid) weekData.paid = {};
+  if (!weekData.factoryEntries) weekData.factoryEntries = {};
   S.week = weekData;
 
   S.history = localGet('history') || [];
@@ -3193,7 +3214,7 @@ function showToast(msg, type = '') {
 let newWorker;
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=5').then(reg => {
+    navigator.serviceWorker.register('./sw.js?v=6').then(reg => {
       // فحص فوري للتحديثات من السيرفر
       reg.update().catch(() => {});
 
@@ -3291,8 +3312,29 @@ async function forceCheckAndApplyUpdate() {
 }
 
 async function start() {
-  await loadData();
-  render();
+  try {
+    await loadData();
+  } catch (e) {
+    console.error('loadData error:', e);
+    if (!S.week) {
+      const thurStart = getWeekStartThursday(formatYMD(new Date()));
+      S.currentWs = thurStart;
+      S.week = { ws: thurStart, entries: {}, paid: {}, factoryEntries: {}, closed: false };
+    }
+  }
+  try {
+    render();
+  } catch (e) {
+    console.error('render error:', e);
+    const app = document.getElementById('app');
+    if (app) {
+      app.innerHTML = `<div style="padding:24px;text-align:center;font-family:Cairo,sans-serif;">
+        <h2 style="color:#dc2626;margin-bottom:8px;">حدث خطأ أثناء تشغيل الصفحة</h2>
+        <p style="color:#475569;font-size:13px;margin-bottom:14px;">${e && e.message ? e.message : 'خطأ غير متوقع'}</p>
+        <button onclick="localStorage.removeItem('aby_folder_skipped');location.reload()" style="padding:10px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">إعادة تحميل التطبيق</button>
+      </div>`;
+    }
+  }
 }
 
 start();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abo-yosef-pwa-v5';
+const CACHE_NAME = 'abo-yosef-pwa-v6';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -39,7 +39,7 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return resp;
-      }).catch(() => caches.match(event.request))
+      }).catch(() => caches.match(event.request).then(c => c || caches.match('./index.html')))
     );
     return;
   }
